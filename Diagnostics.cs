@@ -26,13 +26,13 @@ namespace MlEco
 
         public class CandidateSimulation : Simulation
         {
-            private readonly int numSegements = 10;
+            private readonly int numSegements = 20;
 
             public CandidateSimulation(int _numCreatures, int _numFood) : base(_numCreatures, _numFood) { }
 
             public CandidateSimulation() : base() { }
 
-            public void UpdateCollisionAccess()
+            public void UpdateCollisionAccessor()
             {
                 UpdateCollisions();
             }
@@ -41,9 +41,70 @@ namespace MlEco
             {
                 ClearCreatureCollisions();
 
-                List<List<Creature>> zonesList = MakeZonesList(numSegements);
-                List<List<Creature>> areasList = MakeAreasList(numSegements, zonesList);
+                List<List<Creature>> zonesList = MakeZonesList();
+                List<List<Creature>> areasList = MakeAreasList(zonesList);
                 UpdateCreatureCollisions(areasList);
+            }
+
+            private void ClearCreatureCollisions()
+            {
+                foreach (Creature creature in Creatures)
+                {
+                    creature.obstructedFromHeadings.Clear();
+                    creature.collidingCreatures.Clear();
+                    creature.proximateCreatures.Clear();
+                }
+            }
+
+            private List<List<Creature>> MakeZonesList()
+            {
+                List<List<Creature>> zonesList = new List<List<Creature>>();
+                List<Creature> ungridedCreatures = new List<Creature>();
+                foreach (Creature creature in Creatures) ungridedCreatures.Add(creature);
+
+                for (int i = 0; i < numSegements; i++)
+                {
+                    for (int j = 0; j < numSegements; j++)
+                    {
+                        List<Creature> thisZoneList = new List<Creature>();
+                        foreach (Creature creature in ungridedCreatures)
+                        {
+                            if (creature.position.x >= (double)i / numSegements &&
+                                creature.position.x <= (double)(i + 1) / numSegements &&
+                                creature.position.y >= (double)j / numSegements &&
+                                creature.position.y <= (double)(j + 1) / numSegements)
+                            {
+                                thisZoneList.Add(creature);
+                            }
+                        }
+                        zonesList.Add(thisZoneList);
+                        foreach (Creature creature in thisZoneList) ungridedCreatures.Remove(creature);
+                    }
+                }
+                return zonesList;
+            }
+
+            private List<List<Creature>> MakeAreasList(List<List<Creature>> zonesList)
+            {
+                List<List<Creature>> areasList = new List<List<Creature>>();
+                for (int i = 0; i < numSegements.Pow(2); i++)
+                {
+                    List<Creature> thisAreaList = new List<Creature>();
+                    for (int j = 0; j < 9; j++)
+                    {
+                        int thisIndex = i - ((j % 3) - 1) * (numSegements + 1);
+                        thisIndex = thisIndex < 0 ? 0 : thisIndex;
+                        thisIndex = thisIndex >= numSegements.Pow(2) ?
+                                            numSegements.Pow(2) - 1 : thisIndex;
+
+                        foreach (Creature creature in zonesList[thisIndex])
+                        {
+                            thisAreaList.Add(creature);
+                        }
+                    }
+                    areasList.Add(thisAreaList);
+                }
+                return areasList;
             }
 
             private void UpdateCreatureCollisions(List<List<Creature>> areasList)
@@ -78,66 +139,6 @@ namespace MlEco
                 }
             }
 
-            private void ClearCreatureCollisions()
-            {
-                foreach (Creature creature in Creatures)
-                {
-                    creature.obstructedFromHeadings.Clear();
-                    creature.collidingCreatures.Clear();
-                    creature.proximateCreatures.Clear();
-                }
-            }
-
-            private List<List<Creature>> MakeAreasList(int numSegements, List<List<Creature>> zonesList)
-            {
-                List<List<Creature>> areasList = new List<List<Creature>>();
-                for (int i = 0; i < numSegements.Pow(2); i++)
-                {
-                    List<Creature> thisAreaList = new List<Creature>();
-                    for (int j = 0; j < 9; j++)
-                    {
-                        int thisIndex = i - ((j % 3) - 1) * (numSegements + 1);
-                        thisIndex = thisIndex < 0 ? 0 : thisIndex;
-                        thisIndex = thisIndex >= numSegements.Pow(2) ?
-                                            numSegements.Pow(2)-1 : thisIndex;
-
-                        foreach (Creature creature in zonesList[thisIndex])
-                        {
-                            thisAreaList.Add(creature);
-                        }
-                    }
-                    areasList.Add(thisAreaList);
-                }
-                return areasList;
-            }
-
-            private List<List<Creature>> MakeZonesList(int numSegements)
-            {
-                List<List<Creature>> zonesList = new List<List<Creature>>();
-                List<Creature> ungridedCreatures = new List<Creature>();
-                foreach (Creature creature in Creatures) ungridedCreatures.Add(creature);
-
-                for (int i = 0; i < numSegements; i++)
-                {
-                    for (int j = 0; j < numSegements; j++)
-                    {
-                        List<Creature> thisZoneList = new List<Creature>();
-                        foreach (Creature creature in ungridedCreatures)
-                        {
-                            if (creature.position.x >= (double)i / numSegements &&
-                                creature.position.x <= (double)(i + 1) / numSegements &&
-                                creature.position.y >= (double)j / numSegements &&
-                                creature.position.y <= (double)(j + 1) / numSegements)
-                            {
-                                thisZoneList.Add(creature);
-                            }
-                        }
-                        zonesList.Add(thisZoneList);
-                        foreach (Creature creature in thisZoneList) ungridedCreatures.Remove(creature);
-                    }
-                }
-                return zonesList;
-            }
         }
 
         public static void CompareCollisionAlgo(int numLoops)
@@ -153,7 +154,7 @@ namespace MlEco
 
             for (int i = 0; i < numLoops; i++)
             {
-                DiagSim.UpdateCollisionAccess();
+                DiagSim.UpdateCollisionAccessor();
                 if (i % 100 == 0)
                     Library.ReseedSeededRandom(i);
             }
