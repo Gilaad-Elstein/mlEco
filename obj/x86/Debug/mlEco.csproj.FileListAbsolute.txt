@@ -1,0 +1,6 @@
+/home/gilaad/Projects/mlEco/mlEco/bin/Debug/mlEco.exe
+/home/gilaad/Projects/mlEco/mlEco/bin/Debug/mlEco.pdb
+/home/gilaad/Projects/mlEco/mlEco/obj/x86/Debug/mlEco.csprojAssemblyReference.cache
+/home/gilaad/Projects/mlEco/mlEco/obj/x86/Debug/mlEco.csproj.CoreCompileInputs.cache
+/home/gilaad/Projects/mlEco/mlEco/obj/x86/Debug/mlEco.exe
+/home/gilaad/Projects/mlEco/mlEco/obj/x86/Debug/mlEco.pdb
