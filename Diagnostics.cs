@@ -26,6 +26,8 @@ namespace MlEco
 
         public class CandidateSimulation : Simulation
         {
+            private readonly int numSegements = 10;
+
             public CandidateSimulation(int _numCreatures, int _numFood) : base(_numCreatures, _numFood) { }
 
             public CandidateSimulation() : base() { }
@@ -37,18 +39,15 @@ namespace MlEco
             
             protected override void UpdateCollisions()
             {
-                foreach(Creature creature in Creatures)
-                {
-                    creature.obstructedFromHeadings.Clear();
-                    creature.collidingCreatures.Clear();
-                    creature.proximateCreatures.Clear();
-                }
+                ClearCreatureCollisions();
 
-                int numSegements = 10;
                 List<List<Creature>> zonesList = MakeZonesList(numSegements);
-
                 List<List<Creature>> areasList = MakeAreasList(numSegements, zonesList);
+                UpdateCreatureCollisions(areasList);
+            }
 
+            private void UpdateCreatureCollisions(List<List<Creature>> areasList)
+            {
                 foreach (List<Creature> thisAreaList in areasList)
                 {
                     foreach (Creature creature in thisAreaList)
@@ -76,6 +75,16 @@ namespace MlEco
                             }
                         }
                     }
+                }
+            }
+
+            private void ClearCreatureCollisions()
+            {
+                foreach (Creature creature in Creatures)
+                {
+                    creature.obstructedFromHeadings.Clear();
+                    creature.collidingCreatures.Clear();
+                    creature.proximateCreatures.Clear();
                 }
             }
 

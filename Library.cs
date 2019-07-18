@@ -16,6 +16,7 @@ namespace MlEco
         {
             return (int)Math.Pow(a, b);
         }
+
         public static void ReseedSeededRandom(int seed = 0)
         {
             seededRandom = new Random(seed);

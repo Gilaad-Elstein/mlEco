@@ -5,7 +5,7 @@ namespace MlEco
     {
         public static void Main()
         {
-            AppMain(/* diagnostics = */ false);
+            AppMain(/* diagnostics = */ true);
         }
 
         private static void AppMain(bool diagnostics = false)
