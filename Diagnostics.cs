@@ -183,31 +183,6 @@ namespace MlEco
                 (double)ts2.TotalMilliseconds / numLoops);
         }
 
-        private class DiagnosticsMlEcoApp : MlEcoApp
-        {
-            public DiagnosticsMlEcoApp() : base()
-            {
-                simulation = new CandidateSimulation();
-            }
-
-            protected override void OnExpose(object sender, ExposeEventArgs args)
-            {
-                base.OnExpose(sender, args);
-                if (simulation is CandidateSimulation)
-                    base.DrawCaption("--- Candidate CollisionUpdate ---", 35*sUnit, 25*sUnit);
-            }
-
-            protected override void StartSimulationThread()
-            {
-                if (simulation != null && simulation.isRunning)
-                    EndSimulation();
-                simulation = new CandidateSimulation();
-
-                simulationThread = new Thread(() => simulation.Run());
-                simulationThread.Start();
-            }
-        }
-
         private class BaseSimulation : Simulation
         {
             public BaseSimulation(int _numCreatures, int _numFood) : base(_numCreatures, _numFood) { }
@@ -218,6 +193,31 @@ namespace MlEco
             }
         }
 
+        private class DiagnosticsMlEcoApp : MlEcoApp
+        {
+            public DiagnosticsMlEcoApp() : base()
+            {
+                simulation = new CandidateSimulation();
+            }
+
+            protected override void OnExpose(object sender, ExposeEventArgs args)
+            {
+                base.OnExpose(sender, args);
+                string caption = simulation is CandidateSimulation ? "Candidate" : "Base";
+                base.DrawCaption(caption, 70 * sUnit, 85 * sUnit);
+            }
+
+            protected override void StartSimulationThread()
+            {
+                if (simulation != null && simulation.isRunning)
+                    EndSimulation();
+                simulation = simulation is CandidateSimulation ?
+                    new Simulation() : new CandidateSimulation();
+
+                simulationThread = new Thread(() => simulation.Run());
+                simulationThread.Start();
+            }
+        }
 
     }
 }

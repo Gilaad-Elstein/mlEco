@@ -75,7 +75,8 @@ namespace MlEco
                     continue;
                 updateLock = true;
 
-                int loopStartTime = DateTime.Now.Millisecond;
+                Stopwatch watch = new Stopwatch();
+                watch.Start();
 
                 UpdateCollisions();
                 UpdateCreatures();
@@ -85,10 +86,11 @@ namespace MlEco
                 currentStatusDrawn = false;
                 updateLock = false;
                 ticksElapsed++;
+                watch.Stop();
 
                 if (msPerTick != 0)
                 {
-                    int sleepTime = msPerTick - (DateTime.Now.Millisecond - loopStartTime);
+                    int sleepTime = msPerTick - watch.Elapsed.Milliseconds;
                     if (sleepTime > 0)
                         System.Threading.Thread.Sleep(sleepTime);
                 }
