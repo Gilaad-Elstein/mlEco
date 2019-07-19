@@ -151,7 +151,7 @@ namespace MlEco
             BaseSimulation baseSim = new BaseSimulation(100, 100);
 
             Console.WriteLine("\n\n\n\n\n\n");
-            Console.WriteLine("Running {0} loops with candidate method.", numLoops);
+            Console.WriteLine($"Running {numLoops} loops with candidate method.");
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -159,7 +159,7 @@ namespace MlEco
             for (int i = 0; i < numLoops; i++)
             {
                 DiagSim.UpdateCollisionAccessor();
-                if (i % 100 == 0)
+                if (i % 10 == 0)
                     Library.ReseedSeededRandom(i);
             }
 

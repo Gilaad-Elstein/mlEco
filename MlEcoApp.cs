@@ -80,19 +80,21 @@ namespace MlEco
         private bool Redraw()
         {
             while (simulation.updateLock)
+            {
                 continue;
+            }
             drawingArea.QueueDraw();
             return true;
         }
 
         protected virtual void OnExpose(object sender, ExposeEventArgs args)
         {
-
-            if (simulation.currentStatusDrawn)
-                return;
+        
             simulation.drawLock = true;
             while (simulation.updateLock)
-            continue;
+            {
+                continue;
+            }
 
             SetScreenUnits();
 
@@ -100,7 +102,6 @@ namespace MlEco
             DrawCreatures();
             DrawText();
 
-            simulation.currentStatusDrawn = true;
             simulation.drawLock = false;
         }
 

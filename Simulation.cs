@@ -15,7 +15,6 @@ namespace MlEco
         public List<Creature> Creatures = new List<Creature>();
         public List<Food> Foods = new List<Food>();
 
-        public bool currentStatusDrawn = false;
         public bool drawLock = false;
         public bool updateLock = false;
         public bool isRunning = false; 
@@ -23,12 +22,7 @@ namespace MlEco
 
         public TickRateCounter tickRateCounter;
         public int ticksElapsed = 0;
-        private int _msPerTick = SLOW_TICK_RATE;
-        public int msPerTick { get { return _msPerTick; }
-                               set { _msPerTick = value; 
-                                     tickRateCounter.updateInterval = 
-                                         value == SLOW_TICK_RATE ? 
-                                         SLOW_TICK_RATE : 100; } }
+        public int msPerTick = SLOW_TICK_RATE;
 
         public readonly bool keyboardCreatureEnabled = true;
         public Creature keyboardCreature;
@@ -79,11 +73,11 @@ namespace MlEco
                 watch.Start();
 
                 UpdateCollisions();
-                UpdateCreatures();
                 UpdateMovement();
                 UpdateMating();
+                UpdateCreatures();
 
-                currentStatusDrawn = false;
+
                 updateLock = false;
                 ticksElapsed++;
                 watch.Stop();
@@ -92,7 +86,10 @@ namespace MlEco
                 {
                     int sleepTime = msPerTick - watch.Elapsed.Milliseconds;
                     if (sleepTime > 0)
+                    {
                         System.Threading.Thread.Sleep(sleepTime);
+
+                    }
                 }
 
                 tickRateCounter.Update();
@@ -244,7 +241,6 @@ namespace MlEco
         public struct TickRateCounter
         {
             public double rate;
-            public int updateInterval;
 
             private Stopwatch stopWatch;
             private int ticks;
@@ -253,7 +249,6 @@ namespace MlEco
             {
                 stopWatch = new Stopwatch();
                 ticks = 0;
-                updateInterval = SLOW_TICK_RATE;
             }
 
             public void Update()
@@ -261,10 +256,10 @@ namespace MlEco
                 if (!stopWatch.IsRunning)
                     stopWatch.Start();
                 ticks++;
-                if (ticks % updateInterval == 0)
+                if (stopWatch.Elapsed.Seconds >= 1)
                 {
                     stopWatch.Stop();
-                    rate = 1000 * ((double)ticks / (stopWatch.Elapsed.Milliseconds));
+                    rate = ticks;
                     stopWatch.Reset();
                     ticks = 0;
                 }
