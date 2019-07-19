@@ -15,7 +15,7 @@ namespace MlEco
 
         public double[] actionColor = new double[] { 0, 0, 0 };
         public double[] baseColor;
-        public double size = 1.5;
+        public double size = INIT_CREATURES_SIZE;
         public RectangleF rectangle { get; set; }
 
 

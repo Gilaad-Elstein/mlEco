@@ -5,6 +5,7 @@ using static MlEco.Library;
 using static MlEco.Literals;
 using System.Diagnostics;
 using System.Drawing;
+using QuadTreeLib;
 
 namespace MlEco
 {
@@ -12,6 +13,7 @@ namespace MlEco
     {
         public static int[] topology = new int[] { 3, 4, 5 };
         public int numCreatures;
+        public int numSegments = 20;
 
         public List<Creature> Creatures = new List<Creature>();
         public List<Food> Foods = new List<Food>();
@@ -157,32 +159,57 @@ namespace MlEco
             }
         }
 
-        protected virtual void UpdateCollisions()
+        private void ClearCreatureCollisions()
         {
             foreach (Creature creature in Creatures)
             {
                 creature.obstructedFromHeadings.Clear();
                 creature.collidingCreatures.Clear();
                 creature.proximateCreatures.Clear();
+            }
+        }
 
-                foreach (Creature obstruction in Creatures)
+        protected virtual void UpdateCollisions()
+        {
+            ClearCreatureCollisions();
+            QuadTree<Creature> quadTree = new QuadTree<Creature>(new RectangleF(0, 0, 1, 1));
+            foreach (Creature creature in Creatures)
+            {
+                quadTree.Insert(creature);
+            }
+
+            for (int i = 0; i < numSegments; i++)
+            {
+                for (int j = 0; j < numSegments; j++)
                 {
-                    if (creature == obstruction)
-                        continue;
-                    if (creature.ProximateTo(obstruction, 3.75))
+                    List<Creature> zoneList = quadTree.Query(new RectangleF((float)i / numSegments,
+                                                                                (float)j / numSegments,
+                                                                                1f / numSegments,
+                                                                                1f / numSegments));
+                    foreach (Creature creature in zoneList)
                     {
-                        creature.obstructedFromHeadings.Add(
-                            Math.Atan2(obstruction.position.y - creature.position.y,
-                            obstruction.position.x - creature.position.x));
-                        creature.collidingCreatures.Add(obstruction);
+                        foreach (Creature obstruction in zoneList)
+                        {
+                            if (creature == obstruction)
+                                continue;
+                            if (!creature.collidingCreatures.Contains(obstruction))
+                            {
+                                if (creature.ProximateTo(obstruction, 3.75))
+                                {
+                                    creature.obstructedFromHeadings.Add(
+                                        Math.Atan2(obstruction.position.y - creature.position.y,
+                                        obstruction.position.x - creature.position.x));
+
+                                    creature.collidingCreatures.Add(obstruction);
+                                }
+                            }
+                        }
                     }
-                    if (creature.ProximateTo(obstruction, SENSORY_SPAN))
-                        creature.proximateCreatures.Add(obstruction);
                 }
             }
         }
 
-        private void UpdateMating()
+    private void UpdateMating()
         {
             List<Creature> matingCreatures = new List<Creature>();
             List<Creature> matedCreatures = new List<Creature>();
@@ -260,11 +287,10 @@ namespace MlEco
                 ticks++;
                 if (stopWatch.Elapsed.Seconds >= 1)
                 {
-                    stopWatch.Stop();
                     rate = ticks;
-                    stopWatch.Reset();
                     ticks = 0;
-                    Here($"FPS: {rate}");
+                    stopWatch.Stop();
+                    stopWatch.Reset();
                 }
             }
         }

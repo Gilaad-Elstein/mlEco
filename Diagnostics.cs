@@ -58,7 +58,7 @@ namespace MlEco
                     quadTree.Insert(creature);
                 }
 
-                for (int i = 0; i < numSegements; i++)
+                for (int i = 0; i < numSegments; i++)
                 {
                     for (int j = 0; j < numSegements; j++)
                     {
@@ -256,6 +256,31 @@ namespace MlEco
             {
                 UpdateCollisions();
             }
+
+            protected virtual void OriginalUpdateCollisions()
+            {
+                foreach (Creature creature in Creatures)
+                {
+                    creature.obstructedFromHeadings.Clear();
+                    creature.collidingCreatures.Clear();
+                    creature.proximateCreatures.Clear();
+
+                    foreach (Creature obstruction in Creatures)
+                    {
+                        if (creature == obstruction)
+                            continue;
+                        if (creature.ProximateTo(obstruction, 3.75))
+                        {
+                            creature.obstructedFromHeadings.Add(
+                                Math.Atan2(obstruction.position.y - creature.position.y,
+                                obstruction.position.x - creature.position.x));
+                            creature.collidingCreatures.Add(obstruction);
+                        }
+                        if (creature.ProximateTo(obstruction, SENSORY_SPAN))
+                            creature.proximateCreatures.Add(obstruction);
+                    }
+                }
+            }
         }
 
         private class DiagnosticsMlEcoApp : MlEcoApp
@@ -276,6 +301,7 @@ namespace MlEco
             {
                 if (simulation != null && simulation.isRunning)
                     EndSimulation();
+
                 simulation = simulation is CandidateSimulation ?
                     new Simulation() : new CandidateSimulation();
 

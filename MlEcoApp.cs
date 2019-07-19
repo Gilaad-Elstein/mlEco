@@ -247,8 +247,8 @@ namespace MlEco
         public void Quit()
         {
             EndSimulation();
-            Application.Quit();
             Destroy();
+            Application.Quit();
         }
     }
 }
