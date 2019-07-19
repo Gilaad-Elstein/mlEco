@@ -69,7 +69,6 @@ namespace MlEco
             if (DrawThread != null)
             {
                 GLib.Source.Remove(drawTimerID);
-                DrawThread.Join();
             }
             DrawThread = new Thread(() => drawTimerID =
                                      GLib.Timeout.Add((uint)SLOW_TICK_RATE,
@@ -219,9 +218,23 @@ namespace MlEco
         private void ToggleTickRate()
         {
             if (simulation.msPerTick == SLOW_TICK_RATE)
+            {
                 simulation.msPerTick = 0;
+                GLib.Source.Remove(drawTimerID);
+                DrawThread = new Thread(() => drawTimerID =
+                                     GLib.Timeout.Add((uint)FAST_DRAW_RATE,
+                                                                  Redraw));
+                DrawThread.Start();
+            }
             else
+            {
                 simulation.msPerTick = SLOW_TICK_RATE;
+                GLib.Source.Remove(drawTimerID);
+                DrawThread = new Thread(() => drawTimerID =
+                                     GLib.Timeout.Add((uint)SLOW_DRAW_RATE,
+                                                                  Redraw));
+                DrawThread.Start();
+            }
         }
 
         protected void EndSimulation()

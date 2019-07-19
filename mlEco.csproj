@@ -50,6 +50,7 @@
     </Reference>
     <Reference Include="Mono.Posix" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -72,6 +73,8 @@
     <Compile Include="Literals.cs" />
     <Compile Include="Food.cs" />
     <Compile Include="Diagnostics.cs" />
+    <Compile Include="QuadTree.cs" />
+    <Compile Include="QuadTreeNode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

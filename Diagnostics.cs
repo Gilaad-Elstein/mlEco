@@ -4,7 +4,8 @@ using System.Diagnostics;
 using System.Threading;
 using Gtk;
 using static MlEco.Literals;
-using static MlEco.Library;
+using QuadTreeLib;
+using System.Drawing;
 
 namespace MlEco
 {
@@ -35,6 +36,67 @@ namespace MlEco
             public CandidateSimulation(int _numCreatures, int _numFood) : base(_numCreatures, _numFood) { }
 
             public CandidateSimulation() : base() { }
+
+            public void UpdateCollisionAccessor() { UpdateCollisions(); }
+
+            private void ClearCreatureCollisions()
+            {
+                foreach (Creature creature in Creatures)
+                {
+                    creature.obstructedFromHeadings.Clear();
+                    creature.collidingCreatures.Clear();
+                    creature.proximateCreatures.Clear();
+                }
+            }
+
+            protected override void UpdateCollisions()
+            {
+                ClearCreatureCollisions();
+                QuadTree<Creature> quadTree = new QuadTree<Creature>(new RectangleF(0, 0, 1, 1));
+                foreach (Creature creature in Creatures)
+                {
+                    quadTree.Insert(creature);
+                }
+
+                for (int i = 0; i < numSegements; i++)
+                {
+                    for (int j = 0; j < numSegements; j++)
+                    {
+                        List<Creature> zoneList = quadTree.Query(new RectangleF((float)i / numSegements,
+                                                                                    (float)j / numSegements,
+                                                                                    1f / numSegements,
+                                                                                    1f / numSegements));
+                        foreach (Creature creature in zoneList)
+                        {
+                            foreach (Creature obstruction in zoneList)
+                            {
+                                if (creature == obstruction)
+                                    continue;
+                                if (!creature.collidingCreatures.Contains(obstruction))
+                                {
+                                    if (creature.ProximateTo(obstruction, 3.75))
+                                    {
+                                        creature.obstructedFromHeadings.Add(
+                                            Math.Atan2(obstruction.position.y - creature.position.y,
+                                            obstruction.position.x - creature.position.x));
+
+                                        creature.collidingCreatures.Add(obstruction);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public class ZonesCandidateSimulation : Simulation
+        {
+            private readonly int numSegements = 20;
+
+            public ZonesCandidateSimulation(int _numCreatures, int _numFood) : base(_numCreatures, _numFood) { }
+
+            public ZonesCandidateSimulation() : base() { }
 
             public void UpdateCollisionAccessor()
             {
@@ -150,7 +212,6 @@ namespace MlEco
             CandidateSimulation DiagSim = new CandidateSimulation(100, 100);
             BaseSimulation baseSim = new BaseSimulation(100, 100);
 
-            Console.WriteLine("\n\n\n\n\n\n");
             Console.WriteLine($"Running {numLoops} loops with candidate method.");
 
             Stopwatch stopwatch = new Stopwatch();

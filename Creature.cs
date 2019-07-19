@@ -3,10 +3,11 @@ using static MlEco.mlZoo;
 using static MlEco.Library;
 using static MlEco.Literals;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace MlEco
 {
-    public class Creature
+    public class Creature : QuadTreeLib.IHasRect
     {
         public FCBrain brain;
         public Position position;
@@ -15,6 +16,8 @@ namespace MlEco
         public double[] actionColor = new double[] { 0, 0, 0 };
         public double[] baseColor;
         public double size = 1.5;
+        public RectangleF rectangle { get; set; }
+
 
         public bool movingFarward = false;
         public bool movingBackward = false;
@@ -37,6 +40,7 @@ namespace MlEco
             this.position = position;
             heading = RandomDouble() * 2 * Math.PI;
             baseColor = new double[] { RandomDouble(), RandomDouble(), RandomDouble() } ;
+            rectangle = new RectangleF((float)position.x, (float)position.y, 2 * (float)size, 2 * (float)size);
         }
 
         public Creature() : this(new FCBrain(Simulation.topology), new Position(0.5, 0.5))

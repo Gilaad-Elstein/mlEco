@@ -4,6 +4,7 @@ using static MlEco.mlZoo;
 using static MlEco.Library;
 using static MlEco.Literals;
 using System.Diagnostics;
+using System.Drawing;
 
 namespace MlEco
 {
@@ -101,6 +102,7 @@ namespace MlEco
         {
             foreach (Creature creature in Creatures)
             {
+                creature.rectangle = new RectangleF((float)creature.position.x, (float)creature.position.y, (float)creature.size/100, (float)creature.size/100);
                 if (creature.mating)
                     creature.actionColor = new double[] { 1, 0, 0 };
                 else
@@ -262,6 +264,7 @@ namespace MlEco
                     rate = ticks;
                     stopWatch.Reset();
                     ticks = 0;
+                    Here($"FPS: {rate}");
                 }
             }
         }
