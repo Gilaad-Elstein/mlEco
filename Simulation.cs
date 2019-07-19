@@ -264,7 +264,7 @@ namespace MlEco
                 if (ticks % updateInterval == 0)
                 {
                     stopWatch.Stop();
-                    rate = 1000 * ((double)updateInterval / (stopWatch.Elapsed.Milliseconds));
+                    rate = 1000 * ((double)ticks / (stopWatch.Elapsed.Milliseconds));
                     stopWatch.Reset();
                     ticks = 0;
                 }

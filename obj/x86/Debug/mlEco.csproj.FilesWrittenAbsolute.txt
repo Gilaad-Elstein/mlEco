@@ -1,0 +1,6 @@
+/home/gilaad/Projects/mlEco/mlEco/obj/x86/Debug/.NETFramework,Version=v4.7.AssemblyAttribute.cs
+/home/gilaad/Projects/mlEco/mlEco/obj/x86/Debug/mlEco.gtk-gui.gui.stetic
+/home/gilaad/Projects/mlEco/mlEco/bin/Debug/mlEco.pdb
+/home/gilaad/Projects/mlEco/mlEco/bin/Debug/mlEco.exe
+/home/gilaad/Projects/mlEco/mlEco/obj/x86/Debug/mlEco.exe
+/home/gilaad/Projects/mlEco/mlEco/obj/x86/Debug/mlEco.pdb

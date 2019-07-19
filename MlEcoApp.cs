@@ -234,6 +234,7 @@ namespace MlEco
         {
             EndSimulation();
             Application.Quit();
+            Destroy();
         }
     }
 }

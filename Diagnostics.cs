@@ -12,16 +12,20 @@ namespace MlEco
     {
         public static void Run()
         {
-            Library.diagnosticsMode = true; 
+            Library.diagnosticsMode = true;
 
-            Gtk.Application.Init();
-            DiagnosticsMlEcoApp app = new DiagnosticsMlEcoApp();
-            Gtk.Application.Run();
-
+            RunAppInDiagnosticsMode();
             CompareCollisionAlgo(100);
 
 
             return;
+        }
+
+        private static void RunAppInDiagnosticsMode()
+        {
+            Gtk.Application.Init();
+            DiagnosticsMlEcoApp app = new DiagnosticsMlEcoApp();
+            Gtk.Application.Run();
         }
 
         public class CandidateSimulation : Simulation
