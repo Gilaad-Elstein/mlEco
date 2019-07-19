@@ -62,19 +62,5 @@ namespace MlEco
         {
             return new double[] { RandomDouble(), RandomDouble(), RandomDouble() };
         }
-
-        public bool ProximateTo(Creature obstruction, double distance)
-        {
-            double creatureSizeSquaredSum =
-                Math.Pow(ASPECT_RATIO * (position.x - obstruction.position.x), 2) +
-                Math.Pow((position.y - obstruction.position.y), 2);
-
-            double distanceSquaredSum = distance * (Math.Pow(size / 100.0, 2) + Math.Pow(obstruction.size / 100.0, 2));
-
-            if (creatureSizeSquaredSum < distanceSquaredSum)
-                return true;
-            else
-                return false;
-        }
     }
 }

@@ -13,7 +13,7 @@ namespace MlEco
     {
         public static int[] topology = new int[] { 3, 4, 5 };
         public int numCreatures;
-        public int numSegments = 20;
+        public int numSegments = 10;
 
         public List<Creature> Creatures = new List<Creature>();
         public List<Food> Foods = new List<Food>();
@@ -104,7 +104,7 @@ namespace MlEco
         {
             foreach (Creature creature in Creatures)
             {
-                creature.rectangle = new RectangleF((float)creature.position.x, (float)creature.position.y, (float)creature.size/100, (float)creature.size/100);
+                creature.rectangle = new RectangleF((float)creature.position.x, (float)creature.position.y, 1.5f*(float)creature.size/100, 1.5f*(float)ASPECT_RATIO*(float)creature.size/100);
                 if (creature.mating)
                     creature.actionColor = new double[] { 1, 0, 0 };
                 else
@@ -169,6 +169,7 @@ namespace MlEco
             }
         }
 
+        //TODO not colliding at bottom and right edges
         protected virtual void UpdateCollisions()
         {
             ClearCreatureCollisions();
@@ -194,7 +195,7 @@ namespace MlEco
                                 continue;
                             if (!creature.collidingCreatures.Contains(obstruction))
                             {
-                                if (creature.ProximateTo(obstruction, 3.75))
+                                if (creature.rectangle.IntersectsWith(obstruction.rectangle))
                                 {
                                     creature.obstructedFromHeadings.Add(
                                         Math.Atan2(obstruction.position.y - creature.position.y,
