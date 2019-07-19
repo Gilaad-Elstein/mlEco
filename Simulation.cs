@@ -227,7 +227,7 @@ namespace MlEco
                     matingCreatures.Add(creature);
             }
 
-            foreach(Creature PartnerA in Creatures)
+            foreach(Creature PartnerA in matingCreatures)
             {
                 foreach(Creature PartnerB in PartnerA.collidingCreatures)
                 {
