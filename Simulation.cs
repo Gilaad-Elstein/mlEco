@@ -95,7 +95,6 @@ namespace MlEco
                     consumedFoods.Add(food);
                 }
             }
-            foreach (Food food in consumedFoods) { Foods.Remove(food); }
         }
 
         private void UpdateCreatures()
@@ -158,7 +157,6 @@ namespace MlEco
             List<Creature> matingCreatures = new List<Creature>();
             List<Creature> matedCreatures = new List<Creature>();
             List<Creature> offspring = new List<Creature>();
-            List<Creature> killList = new List<Creature>();
 
             foreach (Creature creature in Creatures)
             {
@@ -188,22 +186,35 @@ namespace MlEco
                         baby.lastMatedAtTick = ticksElapsed;
                         PartnerA.lastMatedAtTick = ticksElapsed;
                         PartnerB.lastMatedAtTick = ticksElapsed;
-
-                        int killID = -1;
-                        if (killList.Count < Creatures.Count)
-                        {
-                            while (killID == -1 || killList.Contains(Creatures[killID]) ||
-                            (keyboardCreatureEnabled && Creatures[killID] == keyboardCreature))
-                                killID = RandomInt(Creatures.Count);
-                            killList.Add(Creatures[killID]);
-                        }
+                        PartnerA.timesMated++;
+                        PartnerB.timesMated++;
                     }
                 }
             }
-
-            foreach (Creature creature in killList)
-                Creatures.Remove(creature);
             Creatures.AddRange(offspring);
+
+            if (Creatures.Count >= MAX_CREATURES)
+            {
+                Creatures.Sort();
+                Creatures.Reverse();
+                for (int i=0; i < Creatures.Count - MAX_CREATURES; i++)
+                {
+                    Creatures.RemoveAt(0);
+                }
+            }
+        }
+
+        private void KillRandomCreature()
+        {
+            List<Creature> killList = new List<Creature>();
+            int killID = -1;
+            if (killList.Count < Creatures.Count)
+            {
+                while (killID == -1 || killList.Contains(Creatures[killID]) ||
+                (keyboardCreatureEnabled && Creatures[killID] == keyboardCreature))
+                    killID = RandomInt(Creatures.Count);
+                killList.Add(Creatures[killID]);
+            }
         }
 
         public void RequestEnd()

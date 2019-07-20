@@ -7,13 +7,14 @@ using System.Drawing;
 
 namespace MlEco
 {
-    public class Creature : QuadTreeLib.IHasRect, ICollidable
+    public class Creature : QuadTreeLib.IHasRect, ICollidable, IComparable
     {
         public FCBrain brain;
         public Position position;
         public double heading;
         public int energy = INIT_CREATURE_ENERGY;
         public bool isAlive = true;
+        public int timesMated = 0;
 
         public double[] actionColor = new double[] { 0, 0, 0 };
         public double[] baseColor;
@@ -133,6 +134,14 @@ namespace MlEco
             {
                 energy += food.energy;
             }
+        }
+
+        public int CompareTo(object otherCreature)
+        {
+            if (!(otherCreature is Creature))
+                throw new InvalidOperationException();
+            Creature castOtherCreature = (Creature)otherCreature;
+            return this.timesMated.CompareTo(castOtherCreature.timesMated);
         }
     }
 }
