@@ -97,8 +97,11 @@ namespace MlEco
 
             SetScreenUnits();
 
-            DrawFood();
-            DrawCreatures();
+            if (simulation.msPerTick != 0)
+            {
+                DrawFood();
+                DrawCreatures();
+            }
             DrawText();
 
             simulation.drawLock = false;
