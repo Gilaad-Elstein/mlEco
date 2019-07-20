@@ -12,8 +12,8 @@ namespace MlEco
     public class Simulation
     {
         public static int[] topology = new int[] { 3, 4, 5 };
-        public int numCreatures;
-        public int numSegments = 10;
+        public int maxCreatures;
+        public int numSegments = 20;
 
         public List<Creature> Creatures = new List<Creature>();
         public List<Food> Foods = new List<Food>();
@@ -32,32 +32,19 @@ namespace MlEco
 
         public Simulation()
         {
-            this.numCreatures = INIT_CREATURES_NUM;
-            for (int i=0; i < numCreatures; i++)
+            this.maxCreatures = INIT_CREATURES_NUM;
+            for (int i=0; i < maxCreatures; i++)
                 Creatures.Add(new Creature(new FCBrain(topology),
                               new Position(RandomDouble(), RandomDouble())));
 
             for (int i = 0; i < INIT_FOOD_NUM; i++)
                 Foods.Add(new Food());
-
+                
             if (keyboardCreatureEnabled)
             {
                 keyboardCreature = new Creature();
                 Creatures.Add(keyboardCreature);
             }
-            tickRateCounter.Init();
-        }
-
-        public Simulation(int _numCreatures, int _numFood)
-        {
-            this.numCreatures = _numCreatures;
-            for (int i = 0; i < numCreatures; i++)
-                Creatures.Add(new Creature(new FCBrain(topology),
-                              new Position(RandomDouble(), RandomDouble())));
-
-            for (int i = 0; i < _numFood; i++)
-                Foods.Add(new Food());
-
             tickRateCounter.Init();
         }
 
@@ -76,7 +63,6 @@ namespace MlEco
                 watch.Start();
 
                 UpdateCollisions();
-                UpdateMovement();
                 UpdateMating();
                 UpdateCreatures();
 
@@ -102,60 +88,9 @@ namespace MlEco
 
         private void UpdateCreatures()
         {
-            foreach (Creature creature in Creatures)
+            foreach(Creature creature in Creatures)
             {
-                creature.rectangle = new RectangleF((float)creature.position.x, (float)creature.position.y, 1.5f*(float)creature.size/100, 1.5f*(float)ASPECT_RATIO*(float)creature.size/100);
-                if (creature.mating)
-                    creature.actionColor = new double[] { 1, 0, 0 };
-                else
-                    creature.actionColor = new double[] { 0, 0, 0 };
-
-                if (!creature.keyboardCreature)
-                {
-                    creature.brain.Activate(creature.GetSensory());
-                    creature.Act(creature.brain.GetOutputs());
-                }
-            }
-        }
-
-        private void UpdateMovement()
-        {
-            foreach (Creature creature in Creatures)
-            {
-                if (creature.turningLeft && !creature.turningRight)
-                    creature.heading += 0.15;
-                else if (creature.turningRight && !creature.turningLeft)
-                    creature.heading -= 0.15;
-
-                if (creature.movingFarward && !creature.movingBackward)
-                {
-                    creature.position.x += 0.01 * Math.Cos(creature.heading);
-                    creature.position.y -= 0.01 * Math.Sin(creature.heading) * ASPECT_RATIO;
-                    foreach (double obstructedHeading in creature.obstructedFromHeadings)
-                    {
-                        creature.position.x -= 0.01 * Math.Cos(obstructedHeading);
-                        creature.position.y -= 0.01 * Math.Sin(obstructedHeading) * ASPECT_RATIO;
-                    }
-                }
-                else if (creature.movingBackward && !creature.movingFarward)
-                {
-                    creature.position.x -= 0.01 * Math.Cos(creature.heading);
-                    creature.position.y += 0.01 * Math.Sin(creature.heading);
-                    foreach (double obstructedHeading in creature.obstructedFromHeadings)
-                    {
-                        creature.position.x -= 0.01 * Math.Cos(obstructedHeading);
-                        creature.position.y -= 0.01 * Math.Sin(obstructedHeading) * ASPECT_RATIO;
-                    }
-                }
-
-                if (creature.position.x > 1)
-                    creature.position.x = 1;
-                if (creature.position.y > 1)
-                    creature.position.y = 1;
-                if (creature.position.x < 0)
-                    creature.position.x = 0;
-                if (creature.position.y < 0)
-                    creature.position.y = 0;
+                creature.Update();
             }
         }
 
@@ -169,19 +104,18 @@ namespace MlEco
             }
         }
 
-        //TODO not colliding at bottom and right edges
         protected virtual void UpdateCollisions()
         {
             ClearCreatureCollisions();
-            QuadTree<Creature> quadTree = new QuadTree<Creature>(new RectangleF(0, 0, 1, 1));
+            QuadTree<Creature> quadTree = new QuadTree<Creature>(new RectangleF(0, 0, 2, 2));
             foreach (Creature creature in Creatures)
             {
                 quadTree.Insert(creature);
             }
 
-            for (int i = 0; i < numSegments; i++)
+            for (int i = 0; i <= numSegments; i++)
             {
-                for (int j = 0; j < numSegments; j++)
+                for (int j = 0; j <= numSegments; j++)
                 {
                     List<Creature> zoneList = quadTree.Query(new RectangleF((float)i / numSegments,
                                                                                 (float)j / numSegments,

@@ -32,7 +32,7 @@ namespace MlEco
         public List<Creature> collidingCreatures = new List<Creature>();
         public List<double> obstructedFromHeadings = new List<double>();
 
-        public readonly bool keyboardCreature = false;
+        public bool keyboardCreature = false;
 
         public Creature(FCBrain fCBrain, Position position)
         {
@@ -57,10 +57,63 @@ namespace MlEco
             mating = outputs[4] > 0 ? true : false;
         }
 
-        //remove method after simulation class implements set creture sensory
         public double[] GetSensory()
         {
             return new double[] { RandomDouble(), RandomDouble(), RandomDouble() };
+        }
+
+        public void Update()
+        {
+            UpdateMovement();
+            rectangle = new RectangleF((float)position.x, (float)position.y, 1.5f * (float)size / 100, 1.5f * (float)ASPECT_RATIO * (float)size / 100);
+            if (mating)
+                actionColor = new double[] { 1, 0, 0 };
+            else
+                actionColor = new double[] { 0, 0, 0 };
+ 
+            if (!keyboardCreature)
+            {
+                brain.Activate(GetSensory());
+                Act(brain.GetOutputs());
+            }
+        }
+
+        private void UpdateMovement()
+        {
+                if (turningLeft && !turningRight)
+                    heading += 0.15;
+                else if (turningRight && !turningLeft)
+                    heading -= 0.15;
+
+                if (movingFarward && !movingBackward)
+                {
+                    position.x += 0.01 * Math.Cos(heading);
+                    position.y -= 0.01 * Math.Sin(heading) * ASPECT_RATIO;
+                    foreach (double obstructedHeading in obstructedFromHeadings)
+                    {
+                        position.x -= 0.01 * Math.Cos(obstructedHeading);
+                        position.y -= 0.01 * Math.Sin(obstructedHeading) * ASPECT_RATIO;
+                    }
+                }
+                else if (movingBackward && !movingFarward)
+                {
+                    position.x -= 0.01 * Math.Cos(heading);
+                    position.y += 0.01 * Math.Sin(heading);
+                    foreach (double obstructedHeading in obstructedFromHeadings)
+                    {
+                        position.x -= 0.01 * Math.Cos(obstructedHeading);
+                        position.y -= 0.01 * Math.Sin(obstructedHeading) * ASPECT_RATIO;
+                    }
+                }
+
+                if (position.x > 1)
+                    position.x = 1;
+                if (position.y > 1)
+                    position.y = 1;
+                if (position.x < 0)
+                    position.x = 0;
+                if (position.y < 0)
+                    position.y = 0;
         }
     }
 }

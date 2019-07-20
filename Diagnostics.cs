@@ -33,7 +33,7 @@ namespace MlEco
         {
             private readonly int numSegements = 20;
 
-            public CandidateSimulation(int _numCreatures, int _numFood) : base(_numCreatures, _numFood) { }
+            public CandidateSimulation(int maxCreatures) : base() { this.maxCreatures = maxCreatures; }
 
             public CandidateSimulation() : base() { }
 
@@ -54,8 +54,8 @@ namespace MlEco
 
         public static void CompareCollisionAlgo(int numLoops)
         {
-            CandidateSimulation DiagSim = new CandidateSimulation(100, 100);
-            BaseSimulation baseSim = new BaseSimulation(100, 100);
+            CandidateSimulation DiagSim = new CandidateSimulation(100);
+            BaseSimulation baseSim = new BaseSimulation(100);
 
             Console.WriteLine($"Running {numLoops} loops with candidate method.");
 
@@ -95,7 +95,7 @@ namespace MlEco
 
         private class BaseSimulation : Simulation
         {
-            public BaseSimulation(int _numCreatures, int _numFood) : base(_numCreatures, _numFood) { }
+            public BaseSimulation(int maxCreatures) : base() {this.maxCreatures = maxCreatures;}
 
             public void UpdateCollisionAccess()
             {

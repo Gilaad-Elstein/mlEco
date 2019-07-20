@@ -3,7 +3,7 @@ namespace MlEco
 {
     public static class Literals
     {
-        public static readonly int INIT_CREATURES_NUM = 25;
+        public static readonly int INIT_CREATURES_NUM = 50;
         public static readonly double INIT_CREATURES_SIZE = 1.75;
         public static readonly int MATING_CYCLE_LENGTH = 500;
         public static readonly int SENSORY_SPAN = 100;
