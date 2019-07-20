@@ -13,7 +13,7 @@ namespace MlEco
     {
         public static int[] topology = new int[] { 3, 4, 5 };
         public int maxCreatures;
-        public int numSegments = 1;
+        public int numSegments = 10;
 
         public List<Creature> Creatures = new List<Creature>();
         public List<Food> Foods = new List<Food>();
@@ -100,10 +100,16 @@ namespace MlEco
 
         private void UpdateCreatures()
         {
+            List<Creature> deadCreatures = new List<Creature>();
             foreach(Creature creature in Creatures)
             {
                 creature.Update();
+                if (!creature.isAlive)
+                {
+                    deadCreatures.Add(creature);
+                }
             }
+            foreach (Creature creature in deadCreatures) { Creatures.Remove(creature); }
         }
 
         private void ClearCreatureCollisions()

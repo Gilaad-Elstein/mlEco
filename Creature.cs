@@ -12,6 +12,8 @@ namespace MlEco
         public FCBrain brain;
         public Position position;
         public double heading;
+        public int energy = INIT_CREATURE_ENERGY;
+        public bool isAlive = true;
 
         public double[] actionColor = new double[] { 0, 0, 0 };
         public double[] baseColor;
@@ -63,6 +65,8 @@ namespace MlEco
 
         public void Update()
         {
+            energy--;
+            isAlive &= energy != 0;
             UpdateMovement();
             rectangle = new RectangleF((float)position.x, (float)position.y, 1.5f * (float)size / 100, 1.5f * (float)ASPECT_RATIO * (float)size / 100);
             if (mating)
@@ -125,10 +129,10 @@ namespace MlEco
                 collidingCreatures.Add(colidedCreature);
             }
 
-            //if (obstruction is Food food)
-            //{
-
-            //}
+            if (obstruction is Food food)
+            {
+                energy += food.energy;
+            }
         }
     }
 }

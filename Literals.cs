@@ -5,6 +5,7 @@ namespace MlEco
     {
         public static readonly int INIT_CREATURES_NUM = 75;
         public static readonly double INIT_CREATURES_SIZE = 1.75;
+        public static readonly int INIT_CREATURE_ENERGY = 1000;
         public static readonly int MATING_CYCLE_LENGTH = 500;
         public static readonly int SENSORY_SPAN = 100;
 
