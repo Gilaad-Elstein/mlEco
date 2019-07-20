@@ -13,7 +13,7 @@ namespace MlEco
     {
         public static int[] topology = new int[] { 3, 4, 5 };
         public int maxCreatures;
-        public int numSegments = 20;
+        public int numSegments = 1;
 
         public List<Creature> Creatures = new List<Creature>();
         public List<Food> Foods = new List<Food>();
@@ -65,6 +65,7 @@ namespace MlEco
                 UpdateCollisions();
                 UpdateMating();
                 UpdateCreatures();
+                UpdateFood();
 
 
                 updateLock = false;
@@ -77,13 +78,24 @@ namespace MlEco
                     if (sleepTime > 0)
                     {
                         System.Threading.Thread.Sleep(sleepTime);
-
                     }
                 }
-
                 tickRateCounter.Update();
             }
             isRunning = false;
+        }
+
+        private void UpdateFood()
+        {
+            List<Food> consumedFoods = new List<Food>();
+            foreach (Food food in Foods)
+            {
+                if (food.consumed)
+                {
+                    consumedFoods.Add(food);
+                }
+            }
+            foreach (Food food in consumedFoods) { Foods.Remove(food); }
         }
 
         private void UpdateCreatures()
@@ -107,37 +119,28 @@ namespace MlEco
         protected virtual void UpdateCollisions()
         {
             ClearCreatureCollisions();
-            QuadTree<Creature> quadTree = new QuadTree<Creature>(new RectangleF(0, 0, 2, 2));
-            foreach (Creature creature in Creatures)
-            {
-                quadTree.Insert(creature);
-            }
+            QuadTree<ICollidable> quadTree = new QuadTree<ICollidable>(new RectangleF(0, 0, 2, 2));
+            foreach (Creature creature in Creatures) { quadTree.Insert(creature); }
+            foreach (Food food in Foods)             { quadTree.Insert(food); }
 
             for (int i = 0; i <= numSegments; i++)
             {
                 for (int j = 0; j <= numSegments; j++)
                 {
-                    List<Creature> zoneList = quadTree.Query(new RectangleF((float)i / numSegments,
+                    List<ICollidable> zoneList = quadTree.Query(new RectangleF((float)i / numSegments,
                                                                                 (float)j / numSegments,
                                                                                 1f / numSegments,
                                                                                 1f / numSegments));
-                    foreach (Creature creature in zoneList)
+                    foreach (ICollidable collidable in zoneList)
                     {
-                        foreach (Creature obstruction in zoneList)
+                        foreach (ICollidable obstruction in zoneList)
                         {
-                            if (creature == obstruction)
+                            if (collidable == obstruction)
                                 continue;
-                            if (!creature.collidingCreatures.Contains(obstruction))
-                            {
-                                if (creature.rectangle.IntersectsWith(obstruction.rectangle))
+                            if (collidable.rectangle.IntersectsWith(obstruction.rectangle))
                                 {
-                                    creature.obstructedFromHeadings.Add(
-                                        Math.Atan2(obstruction.position.y - creature.position.y,
-                                        obstruction.position.x - creature.position.x));
-
-                                    creature.collidingCreatures.Add(obstruction);
+                                    collidable.CollideWith(obstruction);
                                 }
-                            }
                         }
                     }
                 }

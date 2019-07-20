@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace MlEco
 {
-    public class Creature : QuadTreeLib.IHasRect
+    public class Creature : QuadTreeLib.IHasRect, ICollidable
     {
         public FCBrain brain;
         public Position position;
@@ -40,7 +40,6 @@ namespace MlEco
             this.position = position;
             heading = RandomDouble() * 2 * Math.PI;
             baseColor = new double[] { RandomDouble(), RandomDouble(), RandomDouble() } ;
-            rectangle = new RectangleF((float)position.x, (float)position.y, 2 * (float)size, 2 * (float)size);
         }
 
         public Creature() : this(new FCBrain(Simulation.topology), new Position(0.5, 0.5))
@@ -114,6 +113,22 @@ namespace MlEco
                     position.x = 0;
                 if (position.y < 0)
                     position.y = 0;
+        }
+
+        public void CollideWith(ICollidable obstruction)
+        {
+            if (obstruction is Creature colidedCreature)
+            {
+                obstructedFromHeadings.Add(Math.Atan2(colidedCreature.position.y - position.y,
+                                        colidedCreature.position.x - position.x));
+
+                collidingCreatures.Add(colidedCreature);
+            }
+
+            //if (obstruction is Food food)
+            //{
+
+            //}
         }
     }
 }

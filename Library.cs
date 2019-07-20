@@ -56,5 +56,10 @@ namespace MlEco
                 this.y = y;
             }
         }
+
+        public interface ICollidable : QuadTreeLib.IHasRect
+        {
+            void CollideWith(ICollidable collidable);
+        }
     }
 }

@@ -160,7 +160,6 @@ namespace MlEco
             DrawCaption(String.Format("Tick Rate: {0:0.} t/s", simulation.tickRateCounter.rate), 2 * wUnit, 15 * hUnit);
         }
 
-        //TODO SETUP COLOR LITERALS AND IMPLEMENT USE, +MAKE AND APPLY LIBRARY.RANDOMCOLOR
         private void DrawCircle(double lineWidth, double[] lineColor, double[] fillColor, Position position, double size)
         {
             Cairo.Context cr = Gdk.CairoHelper.Create(drawingArea.GdkWindow);

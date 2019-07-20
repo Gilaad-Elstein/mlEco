@@ -31,7 +31,6 @@ namespace MlEco
 
         public class CandidateSimulation : Simulation
         {
-            private readonly int numSegements = 20;
 
             public CandidateSimulation(int maxCreatures) : base() { this.maxCreatures = maxCreatures; }
 
