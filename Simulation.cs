@@ -6,6 +6,7 @@ using static MlEco.Literals;
 using System.Diagnostics;
 using System.Drawing;
 using QuadTreeLib;
+using mlEco;
 
 namespace MlEco
 {
@@ -110,8 +111,11 @@ namespace MlEco
                                                                                2*(float)SENSORY_SPAN,
                                                                                2*(float)SENSORY_SPAN));
                 sensoryGroup.Remove(creature);
-                //sensoryGroup.Sort(creature); //HERE
+                sensoryGroup.Sort(new IColliadbleComparer(creature));
                 creature.SensoryGroup = sensoryGroup;
+
+                if (creature.SensoryGroup.Count > 0)
+                    Here(creature.SensoryGroup[0]);
 
                 if (!creature.isAlive)
                 {
@@ -121,7 +125,7 @@ namespace MlEco
             foreach (Creature creature in deadCreatures) { Creatures.Remove(creature); }
         }
 
-        private void ClearCreatureCollisions()
+        private void ClearCreaturesCollisions()
         {
             foreach (Creature creature in Creatures)
             {
@@ -133,7 +137,7 @@ namespace MlEco
 
         protected virtual void UpdateCollisions()
         {
-            ClearCreatureCollisions();
+            ClearCreaturesCollisions();
             quadTree = new QuadTree<ICollidable>(new RectangleF(0, 0, 2, 2));
             foreach (Creature creature in Creatures) { quadTree.Insert(creature); }
             foreach (Food food in Foods)             { quadTree.Insert(food); }

@@ -75,6 +75,7 @@
     <Compile Include="Diagnostics.cs" />
     <Compile Include="QuadTree.cs" />
     <Compile Include="QuadTreeNode.cs" />
+    <Compile Include="SimulationObject.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

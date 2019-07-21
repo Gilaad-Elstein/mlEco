@@ -4,23 +4,25 @@ using static MlEco.Library;
 using static MlEco.Literals;
 using System.Collections.Generic;
 using System.Drawing;
+using mlEco;
 
 namespace MlEco
 {
-    public class Creature : QuadTreeLib.IHasRect, ICollidable, IComparable
+    public class Creature : SimulationObject, ICollidable, IComparable
     {
         public FCBrain brain;
-        public Position position;
         public double heading;
         public int energy = INIT_CREATURE_ENERGY;
         public bool isAlive = true;
         public int timesMated = 0;
-
+        public List<ICollidable> SensoryGroup { get; internal set; }
+        public int lastMatedAtTick = 0;
+        public bool readyToMate = false;
+        public List<Creature> proximateCreatures = new List<Creature>();
+        public List<Creature> collidingCreatures = new List<Creature>();
+        public List<double> obstructedFromHeadings = new List<double>();
         public double[] actionColor = new double[] { 0, 0, 0 };
         public double[] baseColor;
-        public double size = INIT_CREATURES_SIZE;
-        public RectangleF rectangle { get; set; }
-        public List<ICollidable> SensoryGroup { get; internal set; }
 
         public bool movingFarward = false;
         public bool movingBackward = false;
@@ -28,19 +30,13 @@ namespace MlEco
         public bool turningRight = false;
         public bool mating = false;
 
-        public int lastMatedAtTick = 0;
-        public bool readyToMate = false;
-
-        public List<Creature> proximateCreatures = new List<Creature>();
-        public List<Creature> collidingCreatures = new List<Creature>();
-        public List<double> obstructedFromHeadings = new List<double>();
-
         public bool keyboardCreature = false;
 
         public Creature(FCBrain fCBrain, Position position)
         {
             brain = fCBrain;
             this.position = position;
+            this.size = INIT_CREATURES_SIZE;
             heading = RandomDouble() * 2 * Math.PI;
             baseColor = new double[] { RandomDouble(), RandomDouble(), RandomDouble() } ;
         }
@@ -91,33 +87,34 @@ namespace MlEco
 
                 if (movingFarward && !movingBackward)
                 {
-                    position.x += 0.01 * Math.Cos(heading);
-                    position.y -= 0.01 * Math.Sin(heading) * ASPECT_RATIO;
+                    position = new Position(position.x + 0.01 * Math.Cos(heading),
+                               position.y - 0.01 * Math.Sin(heading) * ASPECT_RATIO);
+                    
                     foreach (double obstructedHeading in obstructedFromHeadings)
                     {
-                        position.x -= 0.01 * Math.Cos(obstructedHeading);
-                        position.y -= 0.01 * Math.Sin(obstructedHeading) * ASPECT_RATIO;
+                        position = new Position(position.x - 0.01 * Math.Cos(obstructedHeading),
+                                                position.y - 0.01 * Math.Sin(obstructedHeading) * ASPECT_RATIO);
                     }
                 }
                 else if (movingBackward && !movingFarward)
                 {
-                    position.x -= 0.01 * Math.Cos(heading);
-                    position.y += 0.01 * Math.Sin(heading);
+                    position = new Position(position.x - 0.01 * Math.Cos(heading),
+                               position.y + 0.01 * Math.Sin(heading));
                     foreach (double obstructedHeading in obstructedFromHeadings)
                     {
-                        position.x -= 0.01 * Math.Cos(obstructedHeading);
-                        position.y -= 0.01 * Math.Sin(obstructedHeading) * ASPECT_RATIO;
+                        position = new Position(position.x - 0.01 * Math.Cos(obstructedHeading),
+                                                position.y - 0.01 * Math.Sin(obstructedHeading) * ASPECT_RATIO);
                     }
                 }
 
                 if (position.x > 1)
-                    position.x = 1;
+                    position = new Position(1, position.y);
                 if (position.y > 1)
-                    position.y = 1;
+                    position = new Position(position.x, 1);
                 if (position.x < 0)
-                    position.x = 0;
+                    position = new Position(0, position.y);
                 if (position.y < 0)
-                    position.y = 0;
+                    position = new Position(position.x, 0);
         }
 
         public void CollideWith(ICollidable obstruction)

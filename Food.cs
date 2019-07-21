@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Drawing;
+using mlEco;
 using static MlEco.Library;
 using static MlEco.Literals;
 
 
 namespace MlEco
 {
-    public class Food : QuadTreeLib.IHasRect, ICollidable
+    public class Food : SimulationObject, ICollidable
     {
-        public double size;
-        public Position position;
-        public RectangleF rectangle { get; set; }
         public bool consumed = false;
         internal int energy;
 

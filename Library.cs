@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using mlEco;
 
 namespace MlEco
 {
@@ -39,8 +40,16 @@ namespace MlEco
                     return random.Next(maxVal);
         }
 
-        public static void Here(string text = "Here")
+        public static void Here()
         {
+            Here("Here");
+        }
+
+
+        public static void Here(object obj)
+        {
+            String text;
+            text = obj.ToString();
             Console.WriteLine(text +  " | time stamp: {0:D2}:{1:D2}:{2:D2}:{3}",
                 DateTime.Now.Hour,
                 DateTime.Now.Minute,
@@ -48,20 +57,29 @@ namespace MlEco
                 DateTime.Now.Millisecond);
         }
 
-        public struct Position
-        {
-            public double x, y;
-
-            public Position(double x, double y)
-            {
-                this.x = x;
-                this.y = y;
-            }
-        }
-
         public interface ICollidable : QuadTreeLib.IHasRect
         {
+            Position position { get; }
             void CollideWith(ICollidable collidable);
+        }
+
+        public class IColliadbleComparer : IComparer<ICollidable>
+        {
+            Creature creature;
+            public IColliadbleComparer(Creature creature)
+            {
+                this.creature = creature;
+            }
+
+            public int Compare(ICollidable x, ICollidable y)
+            {
+                double distX = creature.GetSquaredDistanceFrom(x);
+                double distY = creature.GetSquaredDistanceFrom(y);
+
+                if (Math.Abs(distX - distY) < 0.00001)
+                    return 0;
+                return  distX > distY ? 1 : -1;
+            }
         }
     }
 }
