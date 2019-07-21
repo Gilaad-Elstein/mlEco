@@ -17,6 +17,7 @@ namespace MlEco
 
         public List<Creature> Creatures = new List<Creature>();
         public List<Food> Foods = new List<Food>();
+        QuadTree<ICollidable> quadTree;
 
         public bool drawLock = false;
         public bool updateLock = false;
@@ -103,6 +104,15 @@ namespace MlEco
             foreach(Creature creature in Creatures)
             {
                 creature.Update();
+
+                List<ICollidable> sensoryGroup = quadTree.Query(new RectangleF((float)creature.position.x - (float)SENSORY_SPAN,
+                                                                               (float)creature.position.y - (float)SENSORY_SPAN,
+                                                                               2*(float)SENSORY_SPAN,
+                                                                               2*(float)SENSORY_SPAN));
+                sensoryGroup.Remove(creature);
+                //sensoryGroup.Sort(creature); //HERE
+                creature.SensoryGroup = sensoryGroup;
+
                 if (!creature.isAlive)
                 {
                     deadCreatures.Add(creature);
@@ -124,7 +134,7 @@ namespace MlEco
         protected virtual void UpdateCollisions()
         {
             ClearCreatureCollisions();
-            QuadTree<ICollidable> quadTree = new QuadTree<ICollidable>(new RectangleF(0, 0, 2, 2));
+            quadTree = new QuadTree<ICollidable>(new RectangleF(0, 0, 2, 2));
             foreach (Creature creature in Creatures) { quadTree.Insert(creature); }
             foreach (Food food in Foods)             { quadTree.Insert(food); }
 

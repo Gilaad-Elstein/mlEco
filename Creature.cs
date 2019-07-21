@@ -20,7 +20,7 @@ namespace MlEco
         public double[] baseColor;
         public double size = INIT_CREATURES_SIZE;
         public RectangleF rectangle { get; set; }
-
+        public List<ICollidable> SensoryGroup { get; internal set; }
 
         public bool movingFarward = false;
         public bool movingBackward = false;
@@ -143,5 +143,6 @@ namespace MlEco
             Creature castOtherCreature = (Creature)otherCreature;
             return this.timesMated.CompareTo(castOtherCreature.timesMated);
         }
+
     }
 }
