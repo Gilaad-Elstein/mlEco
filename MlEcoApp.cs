@@ -160,8 +160,9 @@ namespace MlEco
         private void DrawText()
         {
             DrawCaption("Creatures: " + simulation.Creatures.Count.ToString(), 2 * wUnit, 5 * hUnit);
-            DrawCaption("Tick: " + simulation.ticksElapsed.ToString(), 2 * wUnit, 10 * hUnit);
-            DrawCaption(String.Format("Tick Rate: {0:0.} t/s", simulation.tickRateCounter.rate), 2 * wUnit, 15 * hUnit);
+            DrawCaption("Generation: " + simulation.generation.ToString(), 2 * wUnit, 10 * hUnit);
+            DrawCaption("Tick: " + simulation.ticksElapsed.ToString(), 2 * wUnit, 15 * hUnit);
+            DrawCaption(String.Format("Tick Rate: {0:0.} t/s", simulation.tickRateCounter.rate), 2 * wUnit, 20 * hUnit);
         }
 
         private void DrawCircle(double lineWidth, double[] lineColor, double[] fillColor, Position position, double size)

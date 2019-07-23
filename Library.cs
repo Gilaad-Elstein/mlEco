@@ -10,6 +10,17 @@ namespace MlEco
         private static Random seededRandom = new Random(0);
         public static bool diagnosticsMode = false;
 
+        public const double twoPi = 2*Math.PI;
+        public const double Pi = Math.PI;
+        public const double halfPi = Math.PI/2;
+
+        public static double RangeTwoPI(double value)
+        {
+            while (value < 0) { value += 2 * Math.PI; }
+            while (value > 2 * Math.PI) { value -= 2 * Math.PI; }
+            return value;
+        }
+
         public static double Pow(this double a, double b)
         {
             return Math.Pow(a, b);

@@ -3,15 +3,15 @@ namespace MlEco
 {
     public static class Literals
     {
-        public static readonly int INIT_CREATURES_NUM = 50;
-        public static readonly int MAX_CREATURES = 100;
+        public static readonly int INIT_CREATURES_NUM = 100;
+        public static readonly int MAX_CREATURES = 120;
         public static readonly double INIT_CREATURES_SIZE = 1.25;
-        public static readonly int INIT_CREATURE_ENERGY = 500;
+        public static readonly int INIT_CREATURE_ENERGY = 800;
         public static readonly int MATING_CYCLE_LENGTH = 50;
         public static readonly double SENSORY_SPAN = 0.1;
 
         public static readonly double MAX_RANDOM_FOOD_SIZE = 0.75;
-        public static readonly double INIT_FOOD_NUM = 20;
+        public static readonly double INIT_FOOD_NUM = 200;
         public static readonly double[] FOOD_FILL_COLOR = new double[] { 1, 1, 0 };
         public static readonly double[] FOOD_LINE_COLOR = new double[] { 0, 0, 0 };
 

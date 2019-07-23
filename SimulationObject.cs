@@ -15,6 +15,18 @@ namespace mlEco
             return (this.position.x - collidable.position.x).Pow(2) + 
                     (this.position.y - collidable.position.y).Pow(2);
         }
+
+        public double AngleTo(ICollidable collidable)
+        {
+            return RangeTwoPI(Math.Atan2(collidable.position.y - position.y,
+                                        collidable.position.x - position.x));
+        }
+
+        public double AngleToOrigin()
+        {
+            return RangeTwoPI(Math.Atan2(0.5 - position.y,
+                                        0.5 - position.x));
+        }
     }
 
     public struct Position

@@ -10,11 +10,13 @@ namespace MlEco
 {
     public class Creature : SimulationObject, ICollidable, IComparable
     {
+        public static int[] topology = new int[] { 1, 2, 5 };
         public FCBrain brain;
-        public double heading;
+        private double _heading;
+        public double heading { get { return _heading; } set { _heading = RangeTwoPI(value); } }
         public int energy = INIT_CREATURE_ENERGY;
         public bool isAlive = true;
-        public int timesMated = 0;
+        public int fitness = 0;
         public List<ICollidable> SensoryGroup { get; internal set; }
         public int lastMatedAtTick = 0;
         public bool readyToMate = false;
@@ -32,16 +34,20 @@ namespace MlEco
 
         public bool keyboardCreature = false;
 
-        public Creature(FCBrain fCBrain, Position position)
+        public Creature(Position position)
         {
-            brain = fCBrain;
+            brain = new FCBrain(topology);
             this.position = position;
             this.size = INIT_CREATURES_SIZE;
             heading = RandomDouble() * 2 * Math.PI;
-            baseColor = new double[] { RandomDouble(), RandomDouble(), RandomDouble() } ;
+            baseColor = new double[] { RandomDouble(), RandomDouble(), RandomDouble() };
+            SensoryGroup = new List<ICollidable>();
         }
 
-        public Creature() : this(new FCBrain(Simulation.topology), new Position(0.5, 0.5))
+        public Creature(FCBrain fCBrain, Position position) : this(position) { brain = fCBrain; }
+
+
+        public Creature() : this(new Position(0.5, 0.5))
         {
             this.keyboardCreature = true;
         }
@@ -57,23 +63,37 @@ namespace MlEco
 
         public double[] GetSensory()
         {
-            return new double[] { RandomDouble(), RandomDouble(), RandomDouble() };
+            double input1 = AngleToOrigin();
+            if (SensoryGroup.Count > 0)
+            {
+                for (int i = 0; i < SensoryGroup.Count; i++)
+                {
+                    if (SensoryGroup[i] is Food)
+                    {
+                        double angle = AngleTo(SensoryGroup[i]);
+                        double sortedHeading = twoPi - heading;
+                        input1 = (angle - sortedHeading) / twoPi;
+                        break;
+                    }
+                }
+            }
+            return new double[] { input1 };
         }
 
         public void Update()
         {
             energy--;
-            isAlive &= energy != 0;
+            if (!keyboardCreature) isAlive &= energy != 0;
             UpdateMovement();
             rectangle = new RectangleF((float)position.x, (float)position.y, 1.5f * (float)size / 100, 1.5f * (float)ASPECT_RATIO * (float)size / 100);
             if (mating)
                 actionColor = new double[] { 1, 0, 0 };
             else
                 actionColor = new double[] { 0, 0, 0 };
- 
+
+            brain.Activate(GetSensory());
             if (!keyboardCreature)
             {
-                brain.Activate(GetSensory());
                 Act(brain.GetOutputs());
             }
         }
@@ -121,8 +141,7 @@ namespace MlEco
         {
             if (obstruction is Creature colidedCreature)
             {
-                obstructedFromHeadings.Add(Math.Atan2(colidedCreature.position.y - position.y,
-                                        colidedCreature.position.x - position.x));
+                obstructedFromHeadings.Add(AngleTo(colidedCreature));
 
                 collidingCreatures.Add(colidedCreature);
             }
@@ -130,6 +149,7 @@ namespace MlEco
             if (obstruction is Food food)
             {
                 energy += food.energy;
+                fitness++;
             }
         }
 
@@ -138,7 +158,7 @@ namespace MlEco
             if (!(otherCreature is Creature))
                 throw new InvalidOperationException();
             Creature castOtherCreature = (Creature)otherCreature;
-            return this.timesMated.CompareTo(castOtherCreature.timesMated);
+            return this.fitness.CompareTo(castOtherCreature.fitness);
         }
 
     }

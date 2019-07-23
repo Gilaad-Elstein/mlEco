@@ -12,8 +12,9 @@ namespace MlEco
 {
     public class Simulation
     {
-        public static int[] topology = new int[] { 3, 4, 5 };
         public int maxCreatures;
+        public int generation = 0;
+        public int numDied = 0;
         public int numSegments = 10;
 
         public List<Creature> Creatures = new List<Creature>();
@@ -36,8 +37,7 @@ namespace MlEco
         {
             this.maxCreatures = INIT_CREATURES_NUM;
             for (int i=0; i < maxCreatures; i++)
-                Creatures.Add(new Creature(new FCBrain(topology),
-                              new Position(RandomDouble(), RandomDouble())));
+                Creatures.Add(new Creature(new Position(RandomDouble(), RandomDouble())));
 
             for (int i = 0; i < INIT_FOOD_NUM; i++)
                 Foods.Add(new Food());
@@ -69,6 +69,7 @@ namespace MlEco
                 UpdateCreatures();
                 UpdateFood();
 
+                generation = (int)(numDied / INIT_CREATURES_NUM);
 
                 updateLock = false;
                 ticksElapsed++;
@@ -114,15 +115,13 @@ namespace MlEco
                 sensoryGroup.Sort(new IColliadbleComparer(creature));
                 creature.SensoryGroup = sensoryGroup;
 
-                if (creature.SensoryGroup.Count > 0)
-                    Here(creature.SensoryGroup[0]);
-
                 if (!creature.isAlive)
                 {
                     deadCreatures.Add(creature);
                 }
             }
             foreach (Creature creature in deadCreatures) { Creatures.Remove(creature); }
+            numDied += deadCreatures.Count;
         }
 
         private void ClearCreaturesCollisions()
@@ -193,15 +192,15 @@ namespace MlEco
                     if (!matedCreatures.Contains(PartnerA) &&
                         !matedCreatures.Contains(PartnerB))
                     {
-                        Creature baby = new Creature(PartnerA.brain.CrossOver(PartnerB.brain), PartnerA.position);
+                        Creature baby = new Creature(PartnerA.brain.CrossOver(PartnerB.brain), new Position(RandomDouble(), RandomDouble()));
                         offspring.Add(baby);
                         matedCreatures.Add(PartnerA);
                         matedCreatures.Add(PartnerB);
                         baby.lastMatedAtTick = ticksElapsed;
                         PartnerA.lastMatedAtTick = ticksElapsed;
                         PartnerB.lastMatedAtTick = ticksElapsed;
-                        PartnerA.timesMated++;
-                        PartnerB.timesMated++;
+                        PartnerA.fitness += 10;
+                        PartnerB.fitness += 10;
                     }
                 }
             }
