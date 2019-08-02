@@ -21,11 +21,13 @@ namespace MlEco
         protected Simulation simulation;
         protected Thread simulationThread;
 
+        GuiButton keepBest = new GuiButton(100, 100, "Keep Best");
+
+
         public MlEcoApp() : base("mlEco")
         {
             InitWindow();
-            InitDrawingArea();
-
+            InitDrawables();
             ShowAll();
 
             StartNewThreads();
@@ -42,10 +44,11 @@ namespace MlEco
             KeyPressEvent += KeyPress;
         }
 
-        private void InitDrawingArea()
+        private void InitDrawables()
         {
             drawingArea = new DrawingArea();
             drawingArea.ExposeEvent += OnExpose;
+            drawingArea.ModifyBg(Gtk.StateType.Normal, new Gdk.Color(250, 250, 250));
             Add(drawingArea);
         }
 
@@ -98,14 +101,24 @@ namespace MlEco
 
             SetScreenUnits();
 
+
             if (simulation.msPerTick != 0)
             {
                 DrawFood();
                 DrawCreatures();
             }
             DrawText();
-
             simulation.drawLock = false;
+
+            Cairo.Context cr = Gdk.CairoHelper.Create(drawingArea.GdkWindow);
+
+            cr.SetSourceRGB(0, 0, 0);
+            cr.Rectangle(keepBest.posX, keepBest.posY, 100, 100);
+            cr.LineWidth = 10;
+            cr.Stroke();
+
+            ((IDisposable)cr.GetTarget()).Dispose();
+            ((IDisposable)cr).Dispose();
         }
 
         private void DrawCreatures()
@@ -138,6 +151,7 @@ namespace MlEco
                 cr.MoveTo(0, 0);
                 cr.LineTo(creature.size * sUnit * Math.Cos(creature.heading),
                           -creature.size * sUnit * Math.Sin(creature.heading));
+
                 cr.Stroke();
 
                 ((IDisposable)cr.GetTarget()).Dispose();

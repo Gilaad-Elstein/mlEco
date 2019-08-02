@@ -69,7 +69,7 @@ namespace MlEco
                 UpdateCreatures();
                 UpdateFood();
 
-                generation = (int)(numDied / INIT_CREATURES_NUM);
+                generation = INIT_CREATURES_NUM != 0 ? (int)(numDied / INIT_CREATURES_NUM) : 0;
 
                 updateLock = false;
                 ticksElapsed++;
@@ -105,21 +105,20 @@ namespace MlEco
             List<Creature> deadCreatures = new List<Creature>();
             foreach(Creature creature in Creatures)
             {
-                creature.Update();
-
-                List<ICollidable> sensoryGroup = quadTree.Query(new RectangleF((float)creature.position.x - (float)SENSORY_SPAN,
-                                                                               (float)creature.position.y - (float)SENSORY_SPAN,
-                                                                               2*(float)SENSORY_SPAN,
-                                                                               2*(float)SENSORY_SPAN));
-                sensoryGroup.Remove(creature);
-                sensoryGroup.Sort(new IColliadbleComparer(creature));
-                creature.SensoryGroup = sensoryGroup;
-
                 if (!creature.isAlive)
                 {
                     deadCreatures.Add(creature);
+                    continue;
                 }
+                creature.SensoryGroup = quadTree.Query(new RectangleF((float)creature.position.x - (float)SENSORY_SPAN,
+                                                                               (float)creature.position.y - (float)SENSORY_SPAN,
+                                                                               2*(float)SENSORY_SPAN,
+                                                                               2*(float)SENSORY_SPAN));
+                creature.SensoryGroup.Remove(creature);
+                creature.SensoryGroup.Sort(new IColliadbleComparer(creature));
+                creature.Update();
             }
+
             foreach (Creature creature in deadCreatures) { Creatures.Remove(creature); }
             numDied += deadCreatures.Count;
         }
@@ -128,6 +127,7 @@ namespace MlEco
         {
             foreach (Creature creature in Creatures)
             {
+                creature.SensoryGroup.Clear();
                 creature.obstructedFromHeadings.Clear();
                 creature.collidingCreatures.Clear();
                 creature.proximateCreatures.Clear();

@@ -63,7 +63,7 @@ namespace MlEco
 
         public double[] GetSensory()
         {
-            double input1 = AngleToOrigin();
+            double input1 = 0;
             if (SensoryGroup.Count > 0)
             {
                 for (int i = 0; i < SensoryGroup.Count; i++)
