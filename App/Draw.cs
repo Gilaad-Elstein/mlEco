@@ -71,7 +71,7 @@ namespace MlEco
 
             cr.SetSourceRGB(0, 0, 0);
             cr.Rectangle(buttons[0].posX, buttons[0].posY, 20 * wUnit, 5 * hUnit);
-            cr.LineWidth = 7;
+            cr.LineWidth = sUnit;
             cr.Stroke();
 
             ((IDisposable)cr.GetTarget()).Dispose();

@@ -10,12 +10,11 @@ namespace MlEco
         private void SetGui()
         {
             buttons.Clear();
-            SetScreenUnits();
             buttons.Add(new GuiToggleButton(75 * wUnit, 5 * hUnit, "Keep Best",
                                             new System.Action(EnableKeepBest),
                                             new System.Action(DisableKeepBest)));
         }
-
+        //TODO here, pos into rect and proceed
         public class GuiButton
         {
             public double posX;
