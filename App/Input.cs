@@ -5,6 +5,11 @@ namespace MlEco
 {
     partial class MlEcoApp
     {
+        protected void ButtonPress(object sender, ButtonPressEventArgs args)
+        {
+            Library.Here();
+        }
+
         [GLib.ConnectBefore]
         protected void KeyRelease(object sender, KeyReleaseEventArgs args)
         {

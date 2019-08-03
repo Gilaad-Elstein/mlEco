@@ -59,24 +59,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="MainWindow.cs" />
     <Compile Include="gtk-gui\MainWindow.cs" />
-    <Compile Include="MlEcoApp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Creature.cs" />
-    <Compile Include="Simulation.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="KeyboardInput.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="mlZoo.cs" />
-    <Compile Include="Library.cs" />
-    <Compile Include="Literals.cs" />
-    <Compile Include="Food.cs" />
-    <Compile Include="Diagnostics.cs" />
-    <Compile Include="QuadTree.cs" />
-    <Compile Include="QuadTreeNode.cs" />
-    <Compile Include="SimulationObject.cs" />
-    <Compile Include="GuiButton.cs" />
+    <Compile Include="Simulation\Creature.cs" />
+    <Compile Include="Simulation\Food.cs" />
+    <Compile Include="Simulation\SimulationObject.cs" />
+    <Compile Include="App\Input.cs" />
+    <Compile Include="App\MlEcoApp.cs" />
+    <Compile Include="Library\Diagnostics.cs" />
+    <Compile Include="Library\Library.cs" />
+    <Compile Include="Library\Literals.cs" />
+    <Compile Include="Library\mlZoo.cs" />
+    <Compile Include="Library\QuadTree.cs" />
+    <Compile Include="Library\QuadTreeNode.cs" />
+    <Compile Include="App\Gui.cs" />
+    <Compile Include="Simulation\Simulation.cs" />
+    <Compile Include="MainWindow.cs" />
+    <Compile Include="App\Draw.cs" />
+    <Compile Include="App\SimulationControl.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Simulation\" />
+    <Folder Include="App\" />
+    <Folder Include="Library\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
