@@ -56,8 +56,8 @@ namespace MlEco
                 {
                     foreach (Node node in layer.Nodes)
                     {
-                        if (node.weights == null) //skip inputs
-                            continue;
+                        if (node.weights == null)
+                            continue; //skip inputs
                         for (int i = 0; i < node.weights.Length; i++)
                         {
                             double node_mutation_type = RandomDouble();

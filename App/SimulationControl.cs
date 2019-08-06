@@ -16,6 +16,16 @@ namespace MlEco
             Console.WriteLine("Enable");
         }
 
+        private void DisableFastForward()
+        {
+            Console.WriteLine("Disable");
+        }
+
+        private void EnableFastForward()
+        {
+            Console.WriteLine("Enable");
+        }
+
         protected virtual void StartSimulationThread()
         {
             if (simulation != null && simulation.isRunning)

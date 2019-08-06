@@ -1,51 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using Gtk;
 
 namespace MlEco
 {
     partial class MlEcoApp
     {
-        private List<GuiButton> buttons = new List<GuiButton>();
+        Gtk.HBox mainContainer = new HBox();
+        Gtk.VBox guiContainer = new VBox();
 
-        private void SetGui()
+        private void InitGui()
         {
-            buttons.Clear();
-            buttons.Add(new GuiToggleButton(75 * wUnit, 5 * hUnit, "Keep Best",
-                                            new System.Action(EnableKeepBest),
-                                            new System.Action(DisableKeepBest)));
-        }
-        //TODO here, pos into rect and proceed
-        public class GuiButton
-        {
-            public double posX;
-            public double posY;
-            public string label;
-            public Action action;
+            ToggleButton buttonFastForward = new ToggleButton("FastForward");
+            ToggleButton buttonKeepBest = new ToggleButton("Keep best");
 
-            public GuiButton(double _posX, double _posY, string _label, Action _action)
-            {
-                this.posX = _posX;
-                this.posY = _posY;
-                this.label = _label;
-                this.action = _action;
-            }
+            drawingArea.WidthRequest = 720;
+            drawingArea.HeightRequest = 450;
+            mainContainer.Add(drawingArea);
+            mainContainer.Add(guiContainer);
+            guiContainer.Add(buttonFastForward);
+            guiContainer.Add(buttonKeepBest);
 
-            public void Enable() { action(); }
-        }
-
-        public class GuiToggleButton : GuiButton
-        {
-            public Action disableAction;
-
-            public GuiToggleButton(double _posX, double _posY,
-                            string _label,
-                            Action _action, Action _disableAction) :
-                            base(_posX, _posY, _label, _action)
-            {
-                disableAction = _disableAction;
-            }
-
-            public void Disable() { disableAction(); }
+            Add(mainContainer);
         }
     }
 }

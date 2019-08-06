@@ -1,83 +1,11 @@
 ﻿using System;
-using System.Threading;
-using Gtk;
-using static MlEco.Literals;
 using mlEco;
+using static MlEco.Literals;
 
 namespace MlEco
 {
     partial class MlEcoApp
     {
-        private double wUnit;
-        private double hUnit;
-        protected double sUnit;
-
-        private DrawingArea drawingArea;
-        private uint drawTimerID;
-        private Thread DrawThread;
-
-        private void InitDrawables()
-        {
-            drawingArea = new DrawingArea();
-            drawingArea.ExposeEvent += OnExpose;
-            drawingArea.ModifyBg(Gtk.StateType.Normal, new Gdk.Color(250, 250, 250));
-
-            Add(drawingArea);
-        }
-
-        private void StartDrawThread()
-        {
-            if (DrawThread != null)
-            {
-                GLib.Source.Remove(drawTimerID);
-            }
-            DrawThread = new Thread(() => drawTimerID =
-                                     GLib.Timeout.Add((uint)SLOW_TICK_RATE,
-                                                                  Redraw));
-            DrawThread.Start();
-        }
-
-        private bool Redraw()
-        {
-            while (simulation.updateLock)
-            {
-                continue;
-            }
-            drawingArea.QueueDraw();
-            return true;
-        }
-
-        protected virtual void OnExpose(object sender, ExposeEventArgs args)
-        {
-
-            simulation.drawLock = true;
-            while (simulation.updateLock)
-            {
-                continue;
-            }
-
-            SetScreenUnits();
-            SetGui();
-
-            if (simulation.msPerTick != 0)
-            {
-                DrawFood();
-                DrawCreatures();
-            }
-            DrawText();
-            simulation.drawLock = false;
-
-            Cairo.Context cr = Gdk.CairoHelper.Create(drawingArea.GdkWindow);
-
-            cr.SetSourceRGB(0, 0, 0);
-            cr.Rectangle(buttons[0].posX, buttons[0].posY, 20 * wUnit, 5 * hUnit);
-            cr.LineWidth = sUnit;
-            cr.Stroke();
-
-            ((IDisposable)cr.GetTarget()).Dispose();
-            ((IDisposable)cr).Dispose();
-        }
-
         private void DrawCreatures()
         {
             foreach (Creature creature in simulation.Creatures)
@@ -128,7 +56,7 @@ namespace MlEco
             }
         }
 
-        private void DrawText()
+        private void DrawFeedback()
         {
             DrawCaption("Creatures: " + simulation.Creatures.Count.ToString(), 2 * wUnit, 5 * hUnit);
             DrawCaption("Generation: " + simulation.generation.ToString(), 2 * wUnit, 10 * hUnit);
@@ -167,11 +95,15 @@ namespace MlEco
             return;
         }
 
-        private void SetScreenUnits()
+        private void DrawButton()
         {
-            wUnit = Allocation.Width / 100.0;
-            hUnit = Allocation.Height / 100.0;
-            sUnit = Allocation.Width < Allocation.Height ? wUnit : hUnit;
+
         }
+
+        private void DrawGui()
+        {
+
+        }
+
     }
 }

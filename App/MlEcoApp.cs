@@ -1,10 +1,5 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using Gtk;
-using static MlEco.Literals;
-using static MlEco.Library;
-using mlEco;
-using System.Collections.Generic;
 
 namespace MlEco
 {
@@ -19,6 +14,7 @@ namespace MlEco
         {
             InitWindow();
             InitDrawables();
+            InitGui();
             ShowAll();
             
             StartNewThreads();

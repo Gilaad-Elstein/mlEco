@@ -77,8 +77,9 @@
     <Compile Include="App\Gui.cs" />
     <Compile Include="Simulation\Simulation.cs" />
     <Compile Include="MainWindow.cs" />
-    <Compile Include="App\Draw.cs" />
+    <Compile Include="App\DrawManager.cs" />
     <Compile Include="App\SimulationControl.cs" />
+    <Compile Include="App\DrawObjects.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Simulation\" />

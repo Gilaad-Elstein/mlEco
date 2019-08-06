@@ -11,7 +11,7 @@ namespace MlEco
         public static readonly double SENSORY_SPAN = 0.1;
 
         public static readonly double MAX_RANDOM_FOOD_SIZE = 0.75;
-        public static readonly double INIT_FOOD_NUM = 50;
+        public static readonly double INIT_FOOD_NUM = 100;
         public static readonly double[] FOOD_FILL_COLOR = new double[] { 1, 1, 0 };
         public static readonly double[] FOOD_LINE_COLOR = new double[] { 0, 0, 0 };
 
