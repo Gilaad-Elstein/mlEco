@@ -14,7 +14,7 @@ namespace MlEco
         public FCBrain brain;
         private double _heading;
         public double heading { get { return _heading; } set { _heading = RangeTwoPI(value); } }
-        public int energy = INIT_CREATURE_ENERGY;
+        public double energy = INIT_CREATURE_ENERGY;
         public bool isAlive = true;
         public int fitness = 0;
         public List<ICollidable> SensoryGroup { get; internal set; }
@@ -82,8 +82,8 @@ namespace MlEco
 
         public void Update()
         {
-            energy--;
-            if (!keyboardCreature) isAlive &= energy != 0;
+            energy -= 1;
+            if (!keyboardCreature) isAlive &= energy > 0;
             UpdateMovement();
             rectangle = new RectangleF((float)position.x, (float)position.y, 1.5f * (float)size / 100, 1.5f * (float)ASPECT_RATIO * (float)size / 100);
             if (mating)
@@ -101,13 +101,20 @@ namespace MlEco
         private void UpdateMovement()
         {
                 if (turningLeft && !turningRight)
-                    heading += 0.15;
-                else if (turningRight && !turningLeft)
-                    heading -= 0.15;
+            {
+                energy -= 0.1;
+                heading += 0.15;
+            }
+            else if (turningRight && !turningLeft)
+            {
+                energy -= 0.1;
+                heading -= 0.15;
+            }
 
-                if (movingFarward && !movingBackward)
+            if (movingFarward && !movingBackward)
                 {
-                    position = new Position(position.x + 0.01 * Math.Cos(heading),
+                energy -= 0.1;
+                position = new Position(position.x + 0.01 * Math.Cos(heading),
                                position.y - 0.01 * Math.Sin(heading) * ASPECT_RATIO);
                     
                     foreach (double obstructedHeading in obstructedFromHeadings)
@@ -118,7 +125,8 @@ namespace MlEco
                 }
                 else if (movingBackward && !movingFarward)
                 {
-                    position = new Position(position.x - 0.01 * Math.Cos(heading),
+                energy -= 0.1;
+                position = new Position(position.x - 0.01 * Math.Cos(heading),
                                position.y + 0.01 * Math.Sin(heading));
                     foreach (double obstructedHeading in obstructedFromHeadings)
                     {
@@ -149,7 +157,7 @@ namespace MlEco
             if (obstruction is Food food)
             {
                 energy += food.energy;
-                fitness++;
+                fitness += 10;
             }
         }
 
