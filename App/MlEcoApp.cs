@@ -44,6 +44,7 @@ namespace MlEco
             {
                 Resizable = true;
                 GLib.Timeout.Add(10, delegate { Fullscreen(); return false; });
+                GLib.Timeout.Add(1000, delegate { SetButtonBoxSize(); return false; });
                 isFullscreen = true;
             }
             else
@@ -51,6 +52,7 @@ namespace MlEco
                 Unfullscreen();
                 GLib.Timeout.Add(10, delegate { Resizable = false; return false; });
                 isFullscreen = false;
+                SetButtonBoxSize();
             }
         }
 

@@ -30,9 +30,9 @@ namespace MlEco
                 case Gdk.Key.r:
                     StartNewThreads();
                     break;
-                case Gdk.Key.M:
-                case Gdk.Key.m:
-                    guiContainer.Visible = !guiContainer.Visible;
+                case Gdk.Key.K:
+                case Gdk.Key.k:
+                    ToggleKeepBest();
                     break;
             }
             if (simulation.keyboardCreatureEnabled)

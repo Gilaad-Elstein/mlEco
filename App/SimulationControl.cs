@@ -6,14 +6,9 @@ namespace MlEco
 {
     partial class MlEcoApp
     {
-        private void DisableKeepBest()
+        private void ToggleKeepBest()
         {
-            Console.WriteLine("Disable");
-        }
-
-        private void EnableKeepBest()
-        {
-            Console.WriteLine("Enable");
+            simulation.ToggleKeepBest();
         }
 
         private void DisableFastForward()

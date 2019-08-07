@@ -18,6 +18,8 @@ namespace MlEco
         public int numSegments = 10;
 
         public List<Creature> Creatures = new List<Creature>();
+        public List<Creature> CreaturesHolder = new List<Creature>();
+
         public List<Food> Foods = new List<Food>();
         QuadTree<ICollidable> quadTree;
 
@@ -25,6 +27,7 @@ namespace MlEco
         public bool updateLock = false;
         public bool isRunning = false; 
         public bool AppAsksEndSimualtion = false;
+        private bool keepBest = false;
 
         public TickRateCounter tickRateCounter;
         public int ticksElapsed = 0;
@@ -209,7 +212,6 @@ namespace MlEco
             if (Creatures.Count >= MAX_CREATURES)
             {
                 Creatures.Sort();
-                Creatures.Reverse();
                 for (int i=0; i < Creatures.Count - MAX_CREATURES; i++)
                 {
                     Creatures.RemoveAt(0);
@@ -233,6 +235,26 @@ namespace MlEco
         public void RequestEnd()
         {
             AppAsksEndSimualtion = true;
+        }
+
+        internal void ToggleKeepBest()
+        {
+            if (keepBest)
+            {
+                Creatures = CreaturesHolder;
+            }
+            else
+            {
+                CreaturesHolder = Creatures;
+                CreaturesHolder.Sort();
+                CreaturesHolder.Reverse();
+                Creatures = new List<Creature>();
+                for (int i = 0; i < (CreaturesHolder.Count >= 10 ? 10 : CreaturesHolder.Count); i++)
+                {
+                    Creatures.Add(CreaturesHolder[i]);
+                }
+            }
+            keepBest = !keepBest;
         }
 
         public struct TickRateCounter

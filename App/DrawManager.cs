@@ -17,6 +17,8 @@ namespace MlEco
         private void InitDrawables()
         {
             drawingArea = new DrawingArea();
+            drawingArea.WidthRequest = 720;
+            drawingArea.HeightRequest = 450;
             drawingArea.ExposeEvent += OnExpose;
             drawingArea.ModifyBg(Gtk.StateType.Normal, new Gdk.Color(250, 250, 250));
 
