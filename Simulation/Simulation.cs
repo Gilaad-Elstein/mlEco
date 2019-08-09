@@ -28,6 +28,7 @@ namespace MlEco
         public bool isRunning = false; 
         public bool AppAsksEndSimualtion = false;
         private bool keepBest = false;
+        public bool reqToggleKeepBest = false;
 
         public TickRateCounter tickRateCounter;
         public int ticksElapsed = 0;
@@ -40,11 +41,15 @@ namespace MlEco
         {
             this.maxCreatures = INIT_CREATURES_NUM;
             for (int i=0; i < maxCreatures; i++)
+            {
                 Creatures.Add(new Creature(new Position(RandomDouble(), RandomDouble())));
+            }
 
             for (int i = 0; i < INIT_FOOD_NUM; i++)
+            {
                 Foods.Add(new Food());
-                
+            }
+
             if (keyboardCreatureEnabled)
             {
                 keyboardCreature = new Creature();
@@ -64,6 +69,12 @@ namespace MlEco
                     continue;
                 updateLock = true;
 
+                if (reqToggleKeepBest)
+                {
+                    ToggleKeepBest();
+                    reqToggleKeepBest = false;
+                }
+
                 Stopwatch watch = new Stopwatch();
                 watch.Start();
 
@@ -71,6 +82,26 @@ namespace MlEco
                 UpdateMating();
                 UpdateCreatures();
                 UpdateFood();
+
+                if (Creatures.Count < MIN_CREATURES && !keepBest)
+                {
+                    Creatures.Sort();
+                    Creatures.Reverse();
+                    for (int i = 0; i < MIN_CREATURES - Creatures.Count; i++)
+                    {
+                        Creature PartnerA = Creatures[RandomInt(10)];
+                        Creature PartnerB = Creatures[RandomInt(10)];
+                        while (PartnerA == PartnerB)
+                        {
+                            PartnerB = Creatures[RandomInt(10)];
+                        }
+                        Creature baby = new Creature(PartnerA.brain.CrossOver(PartnerB.brain), new Position(RandomDouble(), RandomDouble()))
+                        {
+                            lastMatedAtTick = ticksElapsed
+                        };
+                        Creatures.Add(baby);
+                    }
+                }
 
                 generation = INIT_CREATURES_NUM != 0 ? (int)(numDied / INIT_CREATURES_NUM) : 0;
 
@@ -89,6 +120,16 @@ namespace MlEco
                 tickRateCounter.Update();
             }
             isRunning = false;
+        }
+
+        public double GetAvarageFitness()
+        {
+            double sum = 0;
+            for (int i=0; i < Creatures.Count; i++)
+            {
+                sum += Creatures[i].fitness;
+            }
+            return sum / Creatures.Count;
         }
 
         private void UpdateFood()

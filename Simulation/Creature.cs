@@ -10,12 +10,13 @@ namespace MlEco
 {
     public class Creature : SimulationObject, ICollidable, IComparable
     {
-        public static int[] topology = new int[] { 1, 2, 5 };
+        public static int[] topology = new int[] { 3, 2, 5 };
         public FCBrain brain;
         private double _heading;
         public double heading { get { return _heading; } set { _heading = RangeTwoPI(value); } }
         public double energy = INIT_CREATURE_ENERGY;
         public bool isAlive = true;
+        public int lifeTime = 0;
         public int fitness = 0;
         public List<ICollidable> SensoryGroup { get; internal set; }
         public int lastMatedAtTick = 0;
@@ -64,26 +65,40 @@ namespace MlEco
         public double[] GetSensory()
         {
             double input1 = 0;
+            double input2 = 0;
+            double input3 = readyToMate ? 1 : -1;
+            bool foundFood = false;
+            bool foundCreature = false;
             if (SensoryGroup.Count > 0)
             {
                 for (int i = 0; i < SensoryGroup.Count; i++)
                 {
-                    if (SensoryGroup[i] is Food)
+                    if (SensoryGroup[i] is Food && !foundFood)
                     {
                         double angle = AngleTo(SensoryGroup[i]);
                         double sortedHeading = twoPi - heading;
                         input1 = (angle - sortedHeading) / twoPi;
-                        break;
+                        foundFood = true;
                     }
+                    else if(SensoryGroup[i] is Creature && !foundCreature)
+                    {
+                        double angle = AngleTo(SensoryGroup[i]);
+                        double sortedHeading = twoPi - heading;
+                        input2 = (angle - sortedHeading) / twoPi;
+                        foundCreature = true;
+                    }
+                    if (foundFood && foundCreature) { break; }
                 }
             }
-            return new double[] { input1 };
+            return new double[] { input1, input2, input3 };
         }
 
         public void Update()
         {
             energy -= 1;
-            if (!keyboardCreature) isAlive &= energy > 0;
+            lifeTime++;
+            if (mating) { energy -= 2; }
+            if (!keyboardCreature) isAlive &= (energy > 0 && lifeTime <= CREATURE_MAX_LIFESPAN);
             UpdateMovement();
             rectangle = new RectangleF((float)position.x, (float)position.y, 1.5f * (float)size / 100, 1.5f * (float)ASPECT_RATIO * (float)size / 100);
             if (mating)

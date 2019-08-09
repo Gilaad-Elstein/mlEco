@@ -62,6 +62,7 @@ namespace MlEco
             DrawCaption("Generation: " + simulation.generation.ToString(), 2 * wUnit, 10 * hUnit);
             DrawCaption("Tick: " + simulation.ticksElapsed.ToString(), 2 * wUnit, 15 * hUnit);
             DrawCaption(String.Format("Tick Rate: {0:0.} t/s", simulation.tickRateCounter.rate), 2 * wUnit, 20 * hUnit);
+            DrawCaption(String.Format("Avrage Fitness: {0:0.00}", simulation.GetAvarageFitness()), 2 * wUnit, 25 * hUnit);
         }
 
         private void DrawCircle(double lineWidth, double[] lineColor, double[] fillColor, Position position, double size)
@@ -94,16 +95,5 @@ namespace MlEco
             texTcr.Dispose();
             return;
         }
-
-        private void DrawButton()
-        {
-
-        }
-
-        private void DrawGui()
-        {
-
-        }
-
     }
 }

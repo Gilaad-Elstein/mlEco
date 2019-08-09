@@ -32,7 +32,7 @@ namespace MlEco
                     break;
                 case Gdk.Key.K:
                 case Gdk.Key.k:
-                    ToggleKeepBest();
+                    simulation.reqToggleKeepBest = true;
                     break;
             }
             if (simulation.keyboardCreatureEnabled)

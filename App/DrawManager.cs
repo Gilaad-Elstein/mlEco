@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Gtk;
 using static MlEco.Literals;
 
@@ -66,6 +67,10 @@ namespace MlEco
             DrawFeedback();
             DrawGui();
             simulation.drawLock = false;
+        }
+
+        private void DrawGui()
+        {
         }
 
         private void SetScreenUnits()
