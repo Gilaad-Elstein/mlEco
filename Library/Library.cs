@@ -17,20 +17,28 @@ namespace MlEco
         public const double Pi = Math.PI;
         public const double halfPi = Math.PI/2;
 
-        public static void Save(Simulation simulation, string DATA_FILENAME)
+        public static void Save(Simulation simulation)
         {
-            Stream s = File.Open("temp.dat", FileMode.Create);
-            BinaryFormatter b = new BinaryFormatter();
-            b.Serialize(s, simulation);
-            s.Close();
+            Stream stream = File.Open("lastSim.dat", FileMode.Create);
+            BinaryFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(stream, simulation);
+            stream.Close();
         }
 
-        public static Simulation Load(string DATA_FILENAME)
+        public static Simulation Load()
         {
-            Stream s = File.Open("temp.dat", FileMode.Open);
-            BinaryFormatter b = new BinaryFormatter();
-            Simulation simulation = (Simulation)b.Deserialize(s);
-            s.Close();
+            Stream stream;
+            if (File.Exists("lastSim.dat"))
+            {
+                stream = File.Open("lastSim.dat", FileMode.Open);
+            }
+            else
+            {
+                return new Simulation();
+            }
+            BinaryFormatter formatter = new BinaryFormatter();
+            Simulation simulation = (Simulation)formatter.Deserialize(stream);
+            stream.Close();
             return simulation;
         }
 

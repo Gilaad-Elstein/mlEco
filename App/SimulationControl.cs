@@ -14,14 +14,15 @@ namespace MlEco
                 continue;
             }
             simulation.drawLock = true;
-            Save(simulation, "last.dat");
+            Save(simulation);
             simulation.drawLock = false;
         }
 
         public void LoadSimulation()
         {
             simulation.RequestEnd();
-            simulation = Load("last.dat");
+            simulationThread.Join();
+            simulation = Load();
             simulationThread = new Thread(() => simulation.Run());
             simulationThread.Start();
         }
