@@ -10,6 +10,7 @@ using mlEco;
 
 namespace MlEco
 {
+    [Serializable]
     public class Simulation
     {
         public int maxCreatures;
@@ -34,7 +35,7 @@ namespace MlEco
         public int ticksElapsed = 0;
         public int msPerTick = SLOW_TICK_RATE;
 
-        public readonly bool keyboardCreatureEnabled = true;
+        public readonly bool keyboardCreatureEnabled = false;
         public Creature keyboardCreature;
 
         public Simulation()
@@ -298,11 +299,14 @@ namespace MlEco
             keepBest = !keepBest;
         }
 
+        [Serializable]
         public struct TickRateCounter
         {
             public double rate;
 
+            [NonSerialized]
             private Stopwatch stopWatch;
+
             private int ticks;
 
             public void Init()
@@ -313,6 +317,10 @@ namespace MlEco
 
             public void Update()
             {
+                if (stopWatch == null)
+                {
+                    Init();
+                }
                 if (!stopWatch.IsRunning)
                     stopWatch.Start();
                 ticks++;

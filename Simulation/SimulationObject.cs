@@ -4,6 +4,7 @@ using static MlEco.Library;
 
 namespace mlEco
 {
+    [Serializable]
     public class SimulationObject
     {
         public double size;
@@ -29,6 +30,7 @@ namespace mlEco
         }
     }
 
+    [Serializable]
     public struct Position
     {
         public double x { get; internal set; }

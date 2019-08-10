@@ -8,6 +8,7 @@ using mlEco;
 
 namespace MlEco
 {
+    [Serializable]
     public class Creature : SimulationObject, ICollidable, IComparable
     {
         public static int[] topology = new int[] { 3, 2, 5 };

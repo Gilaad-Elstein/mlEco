@@ -14,6 +14,8 @@ namespace QuadTreeLib
   /// that is just big enough to hold it. Each quad has a bucket that 
   /// contain multiple items.
   /// </summary>
+
+  [Serializable]
   public class QuadTree<T> where T : IHasRect
   {
       /// <summary>

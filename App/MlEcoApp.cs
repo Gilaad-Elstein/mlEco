@@ -18,6 +18,7 @@ namespace MlEco
             ShowAll();
             
             StartNewThreads();
+            LoadSimulation();
         }
 
         private void InitWindow()
@@ -58,6 +59,7 @@ namespace MlEco
 
         public void Quit()
         {
+            SaveSimulation();
             EndSimulation();
             Destroy();
             Application.Quit();

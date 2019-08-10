@@ -5,7 +5,9 @@ namespace MlEco
 {
     public delegate double FitnessFunctionPtr(mlZoo.FCBrain n);
     public static class mlZoo
-    { 
+    {
+
+        [Serializable]
         public class FCBrain : IComparable<FCBrain>
         {
             private static readonly double mutationRate = 0.01;
@@ -20,12 +22,19 @@ namespace MlEco
                 return fitness.CompareTo(other_n.fitness);
             }
 
+            private FCBrain()
+            {
+
+            }
+
             public FCBrain(FCBrain n)
             {
                 topology = n.topology;
                 layers = new Layer[topology.Length];
                 for (int i = 0; i < topology.Length; i++)
+                {
                     layers[i] = new Layer(topology, i, n.layers[i]);
+                }
             }
 
             public FCBrain(int[] _topology)
@@ -97,6 +106,7 @@ namespace MlEco
                 return child;
             }
 
+            [Serializable]
             private class Layer
             {
 
@@ -131,6 +141,7 @@ namespace MlEco
                 }
             }
 
+            [Serializable]
             private class Node
             {
                 private readonly int id;

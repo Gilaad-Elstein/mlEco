@@ -58,6 +58,10 @@ namespace MlEco
 
         private void DrawFeedback()
         {
+            if (!showInfo)
+            {
+                return;
+            }
             DrawCaption("Creatures: " + simulation.Creatures.Count.ToString(), 2 * wUnit, 5 * hUnit);
             DrawCaption("Generation: " + simulation.generation.ToString(), 2 * wUnit, 10 * hUnit);
             DrawCaption("Tick: " + simulation.ticksElapsed.ToString(), 2 * wUnit, 15 * hUnit);

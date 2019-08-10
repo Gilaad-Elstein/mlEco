@@ -9,6 +9,8 @@ namespace QuadTreeLib
     /// The QuadTreeNode
     /// </summary>
     /// <typeparam name="T"></typeparam>
+
+    [Serializable]
     public class QuadTreeNode<T> where T : IHasRect
     {
         /// <summary>

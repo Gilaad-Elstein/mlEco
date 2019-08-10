@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using mlEco;
 
 namespace MlEco
@@ -13,6 +16,23 @@ namespace MlEco
         public const double twoPi = 2*Math.PI;
         public const double Pi = Math.PI;
         public const double halfPi = Math.PI/2;
+
+        public static void Save(Simulation simulation, string DATA_FILENAME)
+        {
+            Stream s = File.Open("temp.dat", FileMode.Create);
+            BinaryFormatter b = new BinaryFormatter();
+            b.Serialize(s, simulation);
+            s.Close();
+        }
+
+        public static Simulation Load(string DATA_FILENAME)
+        {
+            Stream s = File.Open("temp.dat", FileMode.Open);
+            BinaryFormatter b = new BinaryFormatter();
+            Simulation simulation = (Simulation)b.Deserialize(s);
+            s.Close();
+            return simulation;
+        }
 
         public static double RangeTwoPI(double value)
         {

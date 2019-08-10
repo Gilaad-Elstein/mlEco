@@ -15,6 +15,8 @@ namespace MlEco
         private uint drawTimerID;
         private Thread DrawThread;
 
+        private bool showInfo = true;
+
         private void InitDrawables()
         {
             drawingArea = new DrawingArea();

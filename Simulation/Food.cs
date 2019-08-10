@@ -7,6 +7,7 @@ using static MlEco.Literals;
 
 namespace MlEco
 {
+    [Serializable]
     public class Food : SimulationObject, ICollidable
     {
         public bool consumed = false;

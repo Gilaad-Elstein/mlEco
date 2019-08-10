@@ -1,11 +1,31 @@
 ﻿using System;
 using System.Threading;
 using static MlEco.Literals;
+using static MlEco.Library;
 
 namespace MlEco
 {
     partial class MlEcoApp
     {
+        public void SaveSimulation()
+        {
+            while (simulation.updateLock)
+            {
+                continue;
+            }
+            simulation.drawLock = true;
+            Save(simulation, "last.dat");
+            simulation.drawLock = false;
+        }
+
+        public void LoadSimulation()
+        {
+            simulation.RequestEnd();
+            simulation = Load("last.dat");
+            simulationThread = new Thread(() => simulation.Run());
+            simulationThread.Start();
+        }
+
         private void ToggleKeepBest()
         {
             simulation.ToggleKeepBest();
