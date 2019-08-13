@@ -8,9 +8,14 @@ namespace MlEco
         public static readonly int MIN_CREATURES = 30;
         public static readonly double INIT_CREATURES_SIZE = 1.25;
         public static readonly int INIT_CREATURE_ENERGY = 1000;
-        public static readonly int MATING_CYCLE_LENGTH = 50;
+        public static readonly int MATING_CYCLE_LENGTH = 300;
         public static readonly int CREATURE_MAX_LIFESPAN = 2000;
+        public static readonly int CREATURE_SAFE_FOR_FIRST_TICKS = 150;
         public static readonly double SENSORY_SPAN = 0.1;
+        public static readonly int KEEP_BEST_NUM_CREATURES = 15;
+
+        public static readonly int[] FC_TOPOLOGY = new int[] { 3, 5, 5 };
+
 
         public static readonly double MAX_RANDOM_FOOD_SIZE = 1;
         public static readonly double INIT_FOOD_NUM = 150;

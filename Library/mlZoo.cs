@@ -3,7 +3,6 @@ using static MlEco.Library;
 
 namespace MlEco
 {
-    public delegate double FitnessFunctionPtr(mlZoo.FCBrain n);
     public static class mlZoo
     {
 
@@ -22,6 +21,7 @@ namespace MlEco
                 return fitness.CompareTo(other_n.fitness);
             }
 
+            //Parameterless constructor for deserializing operations
             private FCBrain()
             {
 
@@ -94,11 +94,11 @@ namespace MlEco
                     {
                         for (int k = 0; k < this.layers[i].Nodes[j].weights.Length; k++)
                         {
-                            child.layers[i].Nodes[j].weights[k] = RandomDouble() < 0.5 ?//this.fitness/(double)(this.fitness + partner.fitness) ?
+                            child.layers[i].Nodes[j].weights[k] = RandomDouble() < this.fitness/(double)(this.fitness + partner.fitness) ?
                                 this.layers[i].Nodes[j].weights[k] : partner.layers[i].Nodes[j].weights[k];
                             if (RandomDouble() < mutationRate)
                                 child.layers[i].Nodes[j].weights[k] = RandomDouble() * 2 - 1;
-                            if (RandomDouble() < mutationRate)
+                            if (RandomDouble() < mutationRate*10)
                                 child.layers[i].Nodes[j].weights[k] += mutationRate * (RandomDouble() * 2 - 1);
                         }
                     }

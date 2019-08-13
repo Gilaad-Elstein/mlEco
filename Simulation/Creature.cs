@@ -11,7 +11,6 @@ namespace MlEco
     [Serializable]
     public class Creature : SimulationObject, ICollidable, IComparable
     {
-        public static int[] topology = new int[] { 3, 2, 5 };
         public FCBrain brain;
         private double _heading;
         public double heading { get { return _heading; } set { _heading = RangeTwoPI(value); } }
@@ -38,7 +37,7 @@ namespace MlEco
 
         public Creature(Position position)
         {
-            brain = new FCBrain(topology);
+            brain = new FCBrain(FC_TOPOLOGY);
             this.position = position;
             this.size = INIT_CREATURES_SIZE;
             heading = RandomDouble() * 2 * Math.PI;

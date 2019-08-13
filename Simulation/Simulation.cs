@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Drawing;
 using QuadTreeLib;
 using mlEco;
+using System.Linq;
 
 namespace MlEco
 {
@@ -37,6 +38,7 @@ namespace MlEco
 
         public readonly bool keyboardCreatureEnabled = false;
         public Creature keyboardCreature;
+        private readonly bool safeTimeForNewCreatures = false;
 
         public Simulation()
         {
@@ -84,7 +86,7 @@ namespace MlEco
                 UpdateCreatures();
                 UpdateFood();
 
-                if (Creatures.Count < MIN_CREATURES && !keepBest)
+                if (Creatures.Count < MIN_CREATURES)
                 {
                     Creatures.Sort();
                     Creatures.Reverse();
@@ -119,6 +121,7 @@ namespace MlEco
                     }
                 }
                 tickRateCounter.Update();
+
             }
             isRunning = false;
         }
@@ -246,17 +249,41 @@ namespace MlEco
                         PartnerB.lastMatedAtTick = ticksElapsed;
                         PartnerA.fitness += 10;
                         PartnerB.fitness += 10;
-                    }
+                    }   
                 }
             }
             Creatures.AddRange(offspring);
 
-            if (Creatures.Count >= MAX_CREATURES)
+            if (safeTimeForNewCreatures)
+            { 
+                if (Creatures.Count >= MAX_CREATURES)
+                {
+                    List<Creature> Killables = new List<Creature>();
+                    foreach (Creature c in Creatures)
+                    {
+                        if (c.lifeTime > CREATURE_SAFE_FOR_FIRST_TICKS)
+                        {
+                            Killables.Add(c);
+                        }
+                    }
+                    Killables.Sort();
+                    for (int i = 0; i < Creatures.Count - MAX_CREATURES; i++)
+                    {
+                        if (i == Killables.Count)
+                        {
+                            break;
+                        }
+                        Creatures.Remove(Killables[i]);
+                    }
+                }
+            }
+
+            if (Creatures.Count > MAX_CREATURES)
             {
                 Creatures.Sort();
-                for (int i=0; i < Creatures.Count - MAX_CREATURES; i++)
+                for (int i = 0; i < Creatures.Count - MAX_CREATURES; i++)
                 {
-                    Creatures.RemoveAt(0);
+                    Creatures.RemoveAt(i);
                 }
             }
         }
@@ -281,22 +308,31 @@ namespace MlEco
 
         internal void ToggleKeepBest()
         {
+            keepBest = !keepBest;
             if (keepBest)
             {
-                Creatures = CreaturesHolder;
+                Creatures.Sort();
+                Creatures.Reverse();
+                for (int i = 0; i < KEEP_BEST_NUM_CREATURES; i++)
+                {
+                    {
+                        Creatures[i].baseColor = new double[] { 0, 0, 0 };
+                        Creatures[i].size *= 3.0 / 2;
+                    }
+                }
             }
             else
             {
-                CreaturesHolder = Creatures;
-                CreaturesHolder.Sort();
-                CreaturesHolder.Reverse();
-                Creatures = new List<Creature>();
-                for (int i = 0; i < (CreaturesHolder.Count >= 10 ? 10 : CreaturesHolder.Count); i++)
+                for (int i = 0; i < Creatures.Count; i++)
                 {
-                    Creatures.Add(CreaturesHolder[i]);
+                    if (Enumerable.SequenceEqual(Creatures[i].baseColor, new double[] { 0, 0, 0 }))
+                    {
+                        Creatures[i].baseColor = new double[] { RandomDouble(), RandomDouble(), RandomDouble() };
+                        Creatures[i].size = INIT_CREATURES_SIZE;
+                    }
                 }
             }
-            keepBest = !keepBest;
+
         }
 
         [Serializable]
