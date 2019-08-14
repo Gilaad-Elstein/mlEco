@@ -11,7 +11,7 @@ namespace MlEco
     [Serializable]
     public class Creature : SimulationObject, ICollidable, IComparable
     {
-        public FCBrain brain;
+        public Agent agent;
         private double _heading;
         public double heading { get { return _heading; } set { _heading = RangeTwoPI(value); } }
         public double energy = INIT_CREATURE_ENERGY;
@@ -38,7 +38,16 @@ namespace MlEco
 
         public Creature(Position position)
         {
-            brain = new FCBrain(FC_TOPOLOGY);
+            switch (AGENT_TYPE)
+            {
+                case AgentType.FCAgent:
+                    agent = new FCAgent(FC_TOPOLOGY);
+                    break;
+
+                case AgentType.NeatAgent:
+                    agent = new NeatAgent();
+                    break;
+            }
             this.position = position;
             this.size = INIT_CREATURES_SIZE;
             heading = RandomDouble() * 2 * Math.PI;
@@ -46,7 +55,7 @@ namespace MlEco
             SensoryGroup = new List<ICollidable>();
         }
 
-        public Creature(FCBrain fCBrain, Position position) : this(position) { brain = fCBrain; }
+        public Creature(Agent _agent, Position position) : this(position) { agent = _agent; }
 
 
         public Creature() : this(new Position(0.5, 0.5))
@@ -107,10 +116,10 @@ namespace MlEco
             else
                 actionColor = new double[] { 0, 0, 0 };
 
-            brain.Activate(GetSensory());
+            agent.Activate(GetSensory());
             if (!keyboardCreature)
             {
-                Act(brain.GetOutputs());
+                Act(agent.GetOutputs());
             }
         }
 

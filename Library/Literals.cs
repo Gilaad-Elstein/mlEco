@@ -3,9 +3,11 @@ namespace MlEco
 {
     public static class Literals
     {
-        public static readonly int INIT_CREATURES_NUM = 100;
-        public static readonly int MAX_CREATURES = 150;
-        public static readonly int MIN_CREATURES = 75;
+        public static readonly AgentType AGENT_TYPE = AgentType.FCAgent;
+
+        public static readonly int INIT_CREATURES_NUM = 50;
+        public static readonly int MAX_CREATURES = 100;
+        public static readonly int MIN_CREATURES = 50;
         public static readonly double INIT_CREATURES_SIZE = 1.25;
         public static readonly int INIT_CREATURE_ENERGY = 1000;
         public static readonly int MATING_CYCLE_LENGTH = 300;

@@ -3,31 +3,22 @@ using static MlEco.Library;
 
 namespace MlEco
 {
-    public static class mlZoo
+    public static partial class mlZoo
     {
-
         [Serializable]
-        public class FCBrain : IComparable<FCBrain>
+        public class FCAgent : Agent
         {
-            private static readonly double mutationRate = 0.01;
 
             private Layer[] layers;
             private int[] topology;
 
-            public double fitness;
-
-            public int CompareTo(FCBrain other_n)
-            {
-                return fitness.CompareTo(other_n.fitness);
-            }
-
-            //Parameterless constructor for deserializing operations
-            private FCBrain()
+            //Parameterless constructor for deserializing
+            private FCAgent()
             {
 
             }
 
-            public FCBrain(FCBrain n)
+            public FCAgent(FCAgent n)
             {
                 topology = n.topology;
                 layers = new Layer[topology.Length];
@@ -37,7 +28,7 @@ namespace MlEco
                 }
             }
 
-            public FCBrain(int[] _topology)
+            public FCAgent(int[] _topology)
             {
                 topology = _topology;
                 layers = new Layer[topology.Length];
@@ -45,7 +36,7 @@ namespace MlEco
                     layers[i] = new Layer(topology, i);
             }
 
-            public double[] Activate(double[] inputs)
+            public override double[] Activate(double[] inputs)
             {
                 layers[0].Activate(inputs);
                 for (int i = 1; i < topology.Length; i++)
@@ -53,57 +44,31 @@ namespace MlEco
                 return layers[layers.Length - 1].GetOutputs();
             }
 
-            internal double[] GetOutputs()
+            internal override double[] GetOutputs()
             {
                 return layers[layers.Length - 1].GetOutputs();
             }
 
-            internal FCBrain Mutate()
+            internal override Agent CrossOver(Agent _partner)
             {
-                FCBrain new_n = new FCBrain(this);
-                foreach (Layer layer in this.layers)
-                {
-                    foreach (Node node in layer.Nodes)
-                    {
-                        if (node.weights == null)
-                            continue; //skip inputs
-                        for (int i = 0; i < node.weights.Length; i++)
-                        {
-                            double node_mutation_type = RandomDouble();
-                            if (node_mutation_type < 0.2)
-                                node.weights[i] += (2 * RandomDouble() - 1) * 0.1;
-                            else if (node_mutation_type < 0.25)
-                                node.weights[i] = 2 * RandomDouble() - 1;
-                        }
-                        double mutation_type = RandomDouble();
-                        if (mutation_type < 0.2)
-                            node.bias += (2 * RandomDouble() - 1) * 0.2;
-                        else if (mutation_type < 0.25)
-                            node.bias = 2 * RandomDouble() - 1;
-                    }
-                }
-                return new_n;
-            }
-
-            internal FCBrain CrossOver(FCBrain partner)
-            {
-                FCBrain child = new FCBrain(topology);
+                FCAgent partner = (FCAgent)_partner;
+                FCAgent child = new FCAgent(topology);
                 for (int i = 1; i < topology.Length; i++)
                 {
                     for (int j = 0; j < topology[i]; j++)
                     {
                         for (int k = 0; k < this.layers[i].Nodes[j].weights.Length; k++)
                         {
-                            child.layers[i].Nodes[j].weights[k] = RandomDouble() < 0.5 ? //this.fitness/(double)(this.fitness + partner.fitness) ?
+                            child.layers[i].Nodes[j].weights[k] = RandomDouble() < 0.5 ?
                                 this.layers[i].Nodes[j].weights[k] : partner.layers[i].Nodes[j].weights[k];
                             if (RandomDouble() < mutationRate)
                                 child.layers[i].Nodes[j].weights[k] = RandomDouble() * 2 - 1;
-                            if (RandomDouble() < mutationRate*10)
+                            if (RandomDouble() < mutationRate * 10)
                                 child.layers[i].Nodes[j].weights[k] += mutationRate * (RandomDouble() * 2 - 1);
                         }
                     }
                 }
-                return child;
+                return (Agent)child;
             }
 
             [Serializable]

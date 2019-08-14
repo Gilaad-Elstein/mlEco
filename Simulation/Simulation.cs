@@ -90,7 +90,7 @@ namespace MlEco
                         {
                             PartnerB = Creatures[RandomInt(10)];
                         }
-                        Creature baby = new Creature(PartnerA.brain.CrossOver(PartnerB.brain), new Position(RandomDouble(), RandomDouble()))
+                        Creature baby = new Creature(PartnerA.agent.CrossOver(PartnerB.agent), new Position(RandomDouble(), RandomDouble()))
                         {
                             lastMatedAtTick = ticksElapsed
                         };
@@ -248,7 +248,7 @@ namespace MlEco
                     if (!matedCreatures.Contains(PartnerA) &&
                         !matedCreatures.Contains(PartnerB))
                     {
-                        Creature baby = new Creature(PartnerA.brain.CrossOver(PartnerB.brain), new Position(RandomDouble(), RandomDouble()));
+                        Creature baby = new Creature(PartnerA.agent.CrossOver(PartnerB.agent), new Position(RandomDouble(), RandomDouble()));
                         offspring.Add(baby);
                         matedCreatures.Add(PartnerA);
                         matedCreatures.Add(PartnerB);
@@ -270,6 +270,7 @@ namespace MlEco
                 while (Creatures.Count > MAX_CREATURES)
                 {
                     int i = RandomInt(Creatures.Count);
+
                     if (Creatures[i].fitness * 
                     (CREATURE_MAX_LIFESPAN - Creatures[i].lifeTime) /
                         maxKeepScore < RandomDouble())

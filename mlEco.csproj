@@ -80,7 +80,6 @@
     <Compile Include="Library\Diagnostics.cs" />
     <Compile Include="Library\Library.cs" />
     <Compile Include="Library\Literals.cs" />
-    <Compile Include="Library\mlZoo.cs" />
     <Compile Include="Library\QuadTree.cs" />
     <Compile Include="Library\QuadTreeNode.cs" />
     <Compile Include="App\Gui.cs" />
@@ -89,11 +88,15 @@
     <Compile Include="App\DrawManager.cs" />
     <Compile Include="App\SimulationControl.cs" />
     <Compile Include="App\DrawObjects.cs" />
+    <Compile Include="Library\mlZoo\mlZoo.cs" />
+    <Compile Include="Library\mlZoo\FCAgent.cs" />
+    <Compile Include="Library\mlZoo\NeatAgent.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Simulation\" />
     <Folder Include="App\" />
     <Folder Include="Library\" />
+    <Folder Include="Library\mlZoo\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

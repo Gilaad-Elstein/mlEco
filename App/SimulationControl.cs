@@ -7,7 +7,6 @@ namespace MlEco
 {
     partial class MlEcoApp
     {
-        private bool MarkBestCreatures = false;
         public void SaveSimulation()
         {
             while (simulation.updateLock)
