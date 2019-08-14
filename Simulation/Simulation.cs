@@ -29,8 +29,7 @@ namespace MlEco
         public bool updateLock = false;
         public bool isRunning = false; 
         public bool AppAsksEndSimualtion = false;
-        private bool keepBest = false;
-        public bool reqToggleKeepBest = false;
+        public bool reqMarkBestCreatures = false;
 
         public TickRateCounter tickRateCounter;
         public int ticksElapsed = 0;
@@ -38,7 +37,6 @@ namespace MlEco
 
         public readonly bool keyboardCreatureEnabled = false;
         public Creature keyboardCreature;
-        private readonly bool safeTimeForNewCreatures = false;
 
         public Simulation()
         {
@@ -72,12 +70,6 @@ namespace MlEco
                     continue;
                 updateLock = true;
 
-                if (reqToggleKeepBest)
-                {
-                    ToggleKeepBest();
-                    reqToggleKeepBest = false;
-                }
-
                 Stopwatch watch = new Stopwatch();
                 watch.Start();
 
@@ -107,6 +99,22 @@ namespace MlEco
                 }
 
                 generation = INIT_CREATURES_NUM != 0 ? (int)(numDied / INIT_CREATURES_NUM) : 0;
+
+                if (reqMarkBestCreatures)
+                {
+                    Creatures.Sort();
+                    Creatures.Reverse();
+                    int i = 0;
+                    for ( ; i < MARK_BEST_NUM_CREATURES; i++)
+                    {
+                        Creatures[i].markBest = true;
+                    }
+                    for (; i < Creatures.Count; i++)
+                    {
+                        Creatures[i].markBest = false;
+                    }
+
+                }
 
                 updateLock = false;
                 ticksElapsed++;
@@ -254,38 +262,23 @@ namespace MlEco
             }
             Creatures.AddRange(offspring);
 
-            if (safeTimeForNewCreatures)
-            { 
-                if (Creatures.Count >= MAX_CREATURES)
+            if (Creatures.Count > MAX_CREATURES)
+             {
+                Creatures.Sort();
+                double maxKeepScore = Creatures[Creatures.Count - 1].fitness *
+                                          CREATURE_MAX_LIFESPAN;
+                while (Creatures.Count > MAX_CREATURES)
                 {
-                    List<Creature> Killables = new List<Creature>();
-                    foreach (Creature c in Creatures)
+                    int i = RandomInt(Creatures.Count);
+                    if (Creatures[i].fitness * 
+                    (CREATURE_MAX_LIFESPAN - Creatures[i].lifeTime) /
+                        maxKeepScore < RandomDouble())
                     {
-                        if (c.lifeTime > CREATURE_SAFE_FOR_FIRST_TICKS)
-                        {
-                            Killables.Add(c);
-                        }
-                    }
-                    Killables.Sort();
-                    for (int i = 0; i < Creatures.Count - MAX_CREATURES; i++)
-                    {
-                        if (i == Killables.Count)
-                        {
-                            break;
-                        }
-                        Creatures.Remove(Killables[i]);
+                        Creatures.Remove(Creatures[i]);
                     }
                 }
             }
 
-            if (Creatures.Count > MAX_CREATURES)
-            {
-                Creatures.Sort();
-                for (int i = 0; i < Creatures.Count - MAX_CREATURES; i++)
-                {
-                    Creatures.RemoveAt(i);
-                }
-            }
         }
 
         private void KillRandomCreature()
@@ -304,35 +297,6 @@ namespace MlEco
         public void RequestEnd()
         {
             AppAsksEndSimualtion = true;
-        }
-
-        internal void ToggleKeepBest()
-        {
-            keepBest = !keepBest;
-            if (keepBest)
-            {
-                Creatures.Sort();
-                Creatures.Reverse();
-                for (int i = 0; i < KEEP_BEST_NUM_CREATURES; i++)
-                {
-                    {
-                        Creatures[i].baseColor = new double[] { 0, 0, 0 };
-                        Creatures[i].size *= 3.0 / 2;
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < Creatures.Count; i++)
-                {
-                    if (Enumerable.SequenceEqual(Creatures[i].baseColor, new double[] { 0, 0, 0 }))
-                    {
-                        Creatures[i].baseColor = new double[] { RandomDouble(), RandomDouble(), RandomDouble() };
-                        Creatures[i].size = INIT_CREATURES_SIZE;
-                    }
-                }
-            }
-
         }
 
         [Serializable]

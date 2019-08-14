@@ -34,6 +34,7 @@ namespace MlEco
         public bool mating = false;
 
         public bool keyboardCreature = false;
+        internal bool markBest = false;
 
         public Creature(Position position)
         {

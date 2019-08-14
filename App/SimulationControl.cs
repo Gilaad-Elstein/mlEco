@@ -7,6 +7,7 @@ namespace MlEco
 {
     partial class MlEcoApp
     {
+        private bool MarkBestCreatures = false;
         public void SaveSimulation()
         {
             while (simulation.updateLock)
@@ -25,11 +26,6 @@ namespace MlEco
             simulation = Load();
             simulationThread = new Thread(() => simulation.Run());
             simulationThread.Start();
-        }
-
-        private void ToggleKeepBest()
-        {
-            simulation.ToggleKeepBest();
         }
 
         private void DisableFastForward()

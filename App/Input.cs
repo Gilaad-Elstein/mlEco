@@ -30,9 +30,9 @@ namespace MlEco
                 case Gdk.Key.r:
                     StartNewThreads();
                     break;
-                case Gdk.Key.K:
-                case Gdk.Key.k:
-                    simulation.reqToggleKeepBest = true;
+                case Gdk.Key.M:
+                case Gdk.Key.m:
+                    simulation.reqMarkBestCreatures = !simulation.reqMarkBestCreatures;
                     break;
                 case Gdk.Key.I:
                 case Gdk.Key.i:

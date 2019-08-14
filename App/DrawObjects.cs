@@ -12,22 +12,27 @@ namespace MlEco
             foreach (Creature creature in simulation.Creatures)
             {
                 Cairo.Context cr = Gdk.CairoHelper.Create(drawingArea.GdkWindow);
-
+              
                 // Draw body
-                DrawCircle(creature.size * 5,
+                DrawCircle(
+                    simulation.reqMarkBestCreatures && creature.markBest ?
+                                   creature.size * 15 : creature.size * 5,
+
                     creature.actionColor,
                     creature.baseColor,
                     creature.position,
                     creature.size);
 
+
                 //Draw ready to mate tag
                 if (creature.readyToMate)
                 {
-                    DrawCircle(creature.size * 3,
+                    DrawCircle(
+                               creature.size * 3,
                                new double[] { 0, 0, 0 },
                                new double[] { 1, 0, 0 },
                                creature.position,
-                               0.5 * creature.size);
+                               0.3 * creature.size);
                 }
 
                 //Draw heading line

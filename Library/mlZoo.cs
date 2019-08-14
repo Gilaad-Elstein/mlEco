@@ -94,7 +94,7 @@ namespace MlEco
                     {
                         for (int k = 0; k < this.layers[i].Nodes[j].weights.Length; k++)
                         {
-                            child.layers[i].Nodes[j].weights[k] = RandomDouble() < this.fitness/(double)(this.fitness + partner.fitness) ?
+                            child.layers[i].Nodes[j].weights[k] = RandomDouble() < 0.5 ? //this.fitness/(double)(this.fitness + partner.fitness) ?
                                 this.layers[i].Nodes[j].weights[k] : partner.layers[i].Nodes[j].weights[k];
                             if (RandomDouble() < mutationRate)
                                 child.layers[i].Nodes[j].weights[k] = RandomDouble() * 2 - 1;
