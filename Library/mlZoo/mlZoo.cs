@@ -13,7 +13,7 @@ namespace MlEco
         [Serializable]
         public abstract class Agent
         {
-            internal static readonly double mutationRate = 0.01;
+            internal static readonly double MutationRate = 0.01;
 
             public abstract double[] Activate(double[] inputs);
             internal abstract double[] GetOutputs();

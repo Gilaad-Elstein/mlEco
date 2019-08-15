@@ -61,10 +61,10 @@ namespace MlEco
                         {
                             child.layers[i].Nodes[j].weights[k] = RandomDouble() < 0.5 ?
                                 this.layers[i].Nodes[j].weights[k] : partner.layers[i].Nodes[j].weights[k];
-                            if (RandomDouble() < mutationRate)
+                            if (RandomDouble() < MutationRate)
                                 child.layers[i].Nodes[j].weights[k] = RandomDouble() * 2 - 1;
-                            if (RandomDouble() < mutationRate * 10)
-                                child.layers[i].Nodes[j].weights[k] += mutationRate * (RandomDouble() * 2 - 1);
+                            if (RandomDouble() < MutationRate * 10)
+                                child.layers[i].Nodes[j].weights[k] += MutationRate * (RandomDouble() * 2 - 1);
                         }
                     }
                 }
