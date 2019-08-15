@@ -17,7 +17,6 @@ namespace MlEco
         public int maxCreatures;
         public int generation = 0;
         public int numDied = 0;
-        public int numSegments = 10;
 
         public List<Creature> Creatures = new List<Creature>();
         public List<Creature> CreaturesHolder = new List<Creature>();
@@ -197,14 +196,14 @@ namespace MlEco
             foreach (Creature creature in Creatures) { quadTree.Insert(creature); }
             foreach (Food food in Foods)             { quadTree.Insert(food); }
 
-            for (int i = 0; i <= numSegments; i++)
+            for (int i = 0; i <= COLLISION_SEG_NUM; i++)
             {
-                for (int j = 0; j <= numSegments; j++)
+                for (int j = 0; j <= COLLISION_SEG_NUM; j++)
                 {
-                    List<ICollidable> zoneList = quadTree.Query(new RectangleF((float)i / numSegments,
-                                                                                (float)j / numSegments,
-                                                                                1f / numSegments,
-                                                                                1f / numSegments));
+                    List<ICollidable> zoneList = quadTree.Query(new RectangleF((float)i / COLLISION_SEG_NUM,
+                                                                                (float)j / COLLISION_SEG_NUM,
+                                                                                1f / COLLISION_SEG_NUM,
+                                                                                1f / COLLISION_SEG_NUM));
                     foreach (ICollidable collidable in zoneList)
                     {
                         foreach (ICollidable obstruction in zoneList)

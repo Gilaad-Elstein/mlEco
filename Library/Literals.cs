@@ -5,14 +5,14 @@ namespace MlEco
     {
         public static readonly AgentType AGENT_TYPE = AgentType.FCAgent;
 
-        public static readonly int INIT_CREATURES_NUM = 50;
-        public static readonly int MAX_CREATURES = 100;
-        public static readonly int MIN_CREATURES = 50;
+        public static readonly int INIT_CREATURES_NUM = 30;
+        public static readonly int MAX_CREATURES = 60;
+        public static readonly int MIN_CREATURES = 30;
         public static readonly double INIT_CREATURES_SIZE = 1.25;
         public static readonly int INIT_CREATURE_ENERGY = 1000;
         public static readonly int MATING_CYCLE_LENGTH = 300;
         public static readonly int CREATURE_MAX_LIFESPAN = 2000;
-        public static readonly double SENSORY_SPAN = 0.1;
+        public static readonly double SENSORY_SPAN = 0.05;
         public static readonly int MARK_BEST_NUM_CREATURES = 5;
 
         public static readonly int[] FC_TOPOLOGY = new int[] { 3, 5, 5 };
@@ -26,6 +26,8 @@ namespace MlEco
         public static readonly int SLOW_TICK_RATE = 30;
         public static readonly int SLOW_DRAW_RATE = 30;
         public static readonly int FAST_DRAW_RATE = 500;
+
+        public static readonly int COLLISION_SEG_NUM = 5;
 
 
         public static readonly double ASPECT_RATIO = 16/9.0;
