@@ -5,15 +5,9 @@ namespace MlEco
     [Serializable]
     public class OviparusSimulation : Simulation
     {
-
-        protected override int GetGenerationNum()
+        protected override void UpdateMating()
         {
-            return 0;
-        }
 
-        protected override void UpdateNumDied(int numDied)
-        {
-           
         }
     }
 }

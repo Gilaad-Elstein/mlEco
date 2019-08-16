@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using mlEco;
 using static MlEco.Literals;
 
 namespace MlEco

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using static MlEco.mlZoo;
 using static MlEco.Library;
 using static MlEco.Literals;
 using System.Diagnostics;
 using System.Drawing;
 using QuadTreeLib;
-using mlEco;
 using System.Linq;
 
 namespace MlEco
@@ -19,8 +17,6 @@ namespace MlEco
         public int generation = 0;
 
         public List<Creature> Creatures = new List<Creature>();
-        public List<Creature> CreaturesHolder = new List<Creature>();
-
         public List<Food> Foods = new List<Food>();
         QuadTree<ICollidable> quadTree;
 
@@ -68,69 +64,54 @@ namespace MlEco
                     continue;
                 updateLock = true;
 
-                Stopwatch watch = new Stopwatch();
-                watch.Start();
-
-                UpdateCollisions();
-                UpdateMating();
-                UpdateCreatures();
-                UpdateFood();
-
-                if (Creatures.Count < MIN_CREATURES)
-                {
-                    Creatures.Sort();
-                    Creatures.Reverse();
-                    for (int i = 0; i < MIN_CREATURES - Creatures.Count; i++)
-                    {
-                        Creature PartnerA = Creatures[RandomInt(10)];
-                        Creature PartnerB = Creatures[RandomInt(10)];
-                        while (PartnerA == PartnerB)
-                        {
-                            PartnerB = Creatures[RandomInt(10)];
-                        }
-                        Creature baby = new Creature(PartnerA.agent.CrossOver(PartnerB.agent), new Position(RandomDouble(), RandomDouble()))
-                        {
-                            lastMatedAtTick = ticksElapsed
-                        };
-                        Creatures.Add(baby);
-                    }
-                }
-                generation = GetGenerationNum();
-                if (reqMarkBestCreatures)
-                {
-                    Creatures.Sort();
-                    Creatures.Reverse();
-                    int i = 0;
-                    for ( ; i < MARK_BEST_NUM_CREATURES; i++)
-                    {
-                        Creatures[i].markBest = true;
-                    }
-                    for (; i < Creatures.Count; i++)
-                    {
-                        Creatures[i].markBest = false;
-                    }
-
-                }
-
-                updateLock = false;
-                ticksElapsed++;
-                watch.Stop();
-
-                if (msPerTick != 0)
-                {
-                    int sleepTime = msPerTick - watch.Elapsed.Milliseconds;
-                    if (sleepTime > 0)
-                    {
-                        System.Threading.Thread.Sleep(sleepTime);
-                    }
-                }
-                tickRateCounter.Update();
-
+                RunFrame();
             }
             isRunning = false;
         }
 
-        protected abstract int GetGenerationNum();
+        protected virtual void RunFrame()
+        {
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+
+            UpdateCollisions();
+            UpdateMating();
+            UpdateCreatures();
+            EnforceMinCreatures();
+
+            if (reqMarkBestCreatures)
+            {
+                Creatures.Sort();
+                Creatures.Reverse();
+                int i = 0;
+                for (; i < MARK_BEST_NUM_CREATURES; i++)
+                {
+                    Creatures[i].markBest = true;
+                }
+                for (; i < Creatures.Count; i++)
+                {
+                    Creatures[i].markBest = false;
+                }
+
+            }
+
+            updateLock = false;
+            ticksElapsed++;
+            watch.Stop();
+
+            if (msPerTick != 0)
+            {
+                int sleepTime = msPerTick - watch.Elapsed.Milliseconds;
+                if (sleepTime > 0)
+                {
+                    System.Threading.Thread.Sleep(sleepTime);
+                }
+            }
+            tickRateCounter.Update();
+        }
+
+        protected virtual void EnforceMinCreatures() { }
 
         public double GetAvarageFitness()
         {
@@ -142,28 +123,22 @@ namespace MlEco
             return sum / Creatures.Count;
         }
 
-        private void UpdateFood()
-        {
-            List<Food> consumedFoods = new List<Food>();
-            foreach (Food food in Foods)
-            {
-                if (food.consumed)
-                {
-                    consumedFoods.Add(food);
-                }
-            }
-        }
-
         private void UpdateCreatures()
         {
             List<Creature> deadCreatures = new List<Creature>();
-            foreach(Creature creature in Creatures)
+            foreach (Creature creature in Creatures)
             {
                 if (!creature.isAlive)
                 {
                     deadCreatures.Add(creature);
                     continue;
                 }
+            }
+            foreach (Creature creature in deadCreatures) { KillCreature(creature); }
+
+            //any optimizing here goes straight to performance
+            foreach (Creature creature in Creatures)
+            {
                 creature.SensoryGroup = quadTree.Query(new RectangleF((float)creature.position.x - (float)SENSORY_SPAN,
                                                                                (float)creature.position.y - (float)SENSORY_SPAN,
                                                                                2*(float)SENSORY_SPAN,
@@ -173,11 +148,8 @@ namespace MlEco
                 creature.Update();
             }
 
-            foreach (Creature creature in deadCreatures) { Creatures.Remove(creature); }
-            UpdateNumDied(deadCreatures.Count);
         }
 
-        protected abstract void UpdateNumDied(int numDied);
 
         private void ClearCreaturesCollisions()
         {
@@ -221,78 +193,11 @@ namespace MlEco
             }
         }
 
-    private void UpdateMating()
+        protected abstract void UpdateMating();
+
+       protected virtual void KillCreature(Creature c)
         {
-            List<Creature> matingCreatures = new List<Creature>();
-            List<Creature> matedCreatures = new List<Creature>();
-            List<Creature> offspring = new List<Creature>();
-
-            foreach (Creature creature in Creatures)
-            {
-                if (ticksElapsed - creature.lastMatedAtTick > MATING_CYCLE_LENGTH)
-                    creature.readyToMate = true;
-                else
-                    creature.readyToMate = false;
-
-                if (creature.readyToMate && creature.mating)
-                    matingCreatures.Add(creature);
-            }
-
-            foreach(Creature PartnerA in matingCreatures)
-            {
-                foreach(Creature PartnerB in PartnerA.collidingCreatures)
-                {
-                    if (!PartnerB.readyToMate || !PartnerB.mating)
-                        continue;
-
-                    if (!matedCreatures.Contains(PartnerA) &&
-                        !matedCreatures.Contains(PartnerB))
-                    {
-                        Creature baby = new Creature(PartnerA.agent.CrossOver(PartnerB.agent), new Position(RandomDouble(), RandomDouble()));
-                        offspring.Add(baby);
-                        matedCreatures.Add(PartnerA);
-                        matedCreatures.Add(PartnerB);
-                        baby.lastMatedAtTick = ticksElapsed;
-                        PartnerA.lastMatedAtTick = ticksElapsed;
-                        PartnerB.lastMatedAtTick = ticksElapsed;
-                        PartnerA.fitness += 10;
-                        PartnerB.fitness += 10;
-                    }   
-                }
-            }
-            Creatures.AddRange(offspring);
-
-            if (Creatures.Count > MAX_CREATURES)
-             {
-                Creatures.Sort();
-                double maxKeepScore = Creatures[Creatures.Count - 1].fitness *
-                                          CREATURE_MAX_LIFESPAN;
-                while (Creatures.Count > MAX_CREATURES)
-                {
-                    int i = RandomInt(Creatures.Count);
-
-                    if (Creatures[i].fitness * 
-                    (CREATURE_MAX_LIFESPAN - Creatures[i].lifeTime) /
-                        maxKeepScore < RandomDouble())
-                    {
-                        Creatures.Remove(Creatures[i]);
-                    }
-                }
-            }
-
-        }
-
-        private void KillRandomCreature()
-        {
-            List<Creature> killList = new List<Creature>();
-            int killID = -1;
-            if (killList.Count < Creatures.Count)
-            {
-                while (killID == -1 || killList.Contains(Creatures[killID]) ||
-                (keyboardCreatureEnabled && Creatures[killID] == keyboardCreature))
-                    killID = RandomInt(Creatures.Count);
-                killList.Add(Creatures[killID]);
-            }
+            Creatures.Remove(c);
         }
 
         public void RequestEnd()

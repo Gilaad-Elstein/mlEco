@@ -4,7 +4,6 @@ using static MlEco.Library;
 using static MlEco.Literals;
 using System.Collections.Generic;
 using System.Drawing;
-using mlEco;
 
 namespace MlEco
 {

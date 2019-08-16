@@ -2,7 +2,7 @@
 using System.Drawing;
 using static MlEco.Library;
 
-namespace mlEco
+namespace MlEco
 {
     [Serializable]
     public class SimulationObject
