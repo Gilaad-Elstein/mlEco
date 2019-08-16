@@ -90,8 +90,8 @@
     <Compile Include="Library\mlZoo\mlZoo.cs" />
     <Compile Include="Library\mlZoo\FCAgent.cs" />
     <Compile Include="Library\mlZoo\NeatAgent.cs" />
-    <Compile Include="Simulation\OviparusSimulation.cs" />
-    <Compile Include="Simulation\ViviparusSimulation.cs" />
+    <Compile Include="Simulation\NEATSimulation.cs" />
+    <Compile Include="Simulation\FCSimulation.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Simulation\" />

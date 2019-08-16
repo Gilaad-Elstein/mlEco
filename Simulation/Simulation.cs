@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace MlEco
 {
-    public enum SimulationType { Viviparus, Oviparus }
+    public enum SimulationType { FullyConnected, NEAT }
 
     [Serializable]
     public abstract class Simulation

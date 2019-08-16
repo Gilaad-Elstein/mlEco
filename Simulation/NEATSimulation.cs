@@ -3,7 +3,7 @@
 namespace MlEco
 {
     [Serializable]
-    public class OviparusSimulation : Simulation
+    public class NEATSimulation : Simulation
     {
         protected override void UpdateMating()
         {

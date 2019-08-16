@@ -37,14 +37,14 @@ namespace MlEco
 
         public Creature(Position position)
         {
-            switch (AGENT_TYPE)
+            switch (SIMULATION_TYPE)
             {
-                case AgentType.FCAgent:
+                case SimulationType.FullyConnected:
                     agent = new FCAgent(FC_TOPOLOGY);
                     break;
 
-                case AgentType.NeatAgent:
-                    agent = new NeatAgent();
+                case SimulationType.NEAT:
+                    agent = new FCAgent(FC_TOPOLOGY); //HERE:: cheange to neat when implemented neat agent
                     break;
             }
             this.position = position;

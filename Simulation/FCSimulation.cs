@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace MlEco
 {
     [Serializable]
-    public class ViviparusSimulation : Simulation
+    public class FCSimulation : Simulation
     {
         private int numDied = 0;
 

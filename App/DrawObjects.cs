@@ -72,7 +72,11 @@ namespace MlEco
             DrawCaption("Tick: " + simulation.ticksElapsed.ToString(), 2 * wUnit, 15 * hUnit);
             DrawCaption(String.Format("Tick Rate: {0:0.} t/s", simulation.tickRateCounter.rate), 2 * wUnit, 20 * hUnit);
             DrawCaption(String.Format("Avrage Fitness: {0:0.}", simulation.GetAvarageFitness()), 2 * wUnit, 25 * hUnit);
-            DrawCaption("Topology: " + string.Join(",", FC_TOPOLOGY.Select(x => x.ToString()).ToArray()), 2 * wUnit, 30 * hUnit);
+            DrawCaption(String.Format("Simulation type: {0}", SIMULATION_TYPE), 2 * wUnit, 30 * hUnit);
+            if (SIMULATION_TYPE == SimulationType.FullyConnected)
+            {
+                DrawCaption("Topology: " + string.Join(",", FC_TOPOLOGY.Select(x => x.ToString()).ToArray()), 2 * wUnit, 35 * hUnit);
+            }
         }
 
         private void DrawCircle(double lineWidth, double[] lineColor, double[] fillColor, Position position, double size)

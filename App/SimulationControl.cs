@@ -51,12 +51,12 @@ namespace MlEco
         {
             switch (SIMULATION_TYPE)
             {
-                case SimulationType.Viviparus:
-                    return new ViviparusSimulation();
-                case SimulationType.Oviparus:
-                    return new OviparusSimulation();
+                case SimulationType.FullyConnected:
+                    return new FCSimulation();
+                case SimulationType.NEAT:
+                    return new NEATSimulation();
                 default:
-                    return new ViviparusSimulation();
+                    return new FCSimulation();
             }
         }
 
