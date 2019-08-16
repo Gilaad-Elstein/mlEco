@@ -77,7 +77,6 @@
     <Compile Include="Simulation\SimulationObject.cs" />
     <Compile Include="App\Input.cs" />
     <Compile Include="App\MlEcoApp.cs" />
-    <Compile Include="Library\Diagnostics.cs" />
     <Compile Include="Library\Library.cs" />
     <Compile Include="Library\Literals.cs" />
     <Compile Include="Library\QuadTree.cs" />
@@ -91,6 +90,8 @@
     <Compile Include="Library\mlZoo\mlZoo.cs" />
     <Compile Include="Library\mlZoo\FCAgent.cs" />
     <Compile Include="Library\mlZoo\NeatAgent.cs" />
+    <Compile Include="Simulation\OviparusSimulation.cs" />
+    <Compile Include="Simulation\ViviparusSimulation.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Simulation\" />

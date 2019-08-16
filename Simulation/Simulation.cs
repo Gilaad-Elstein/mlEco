@@ -11,12 +11,12 @@ using System.Linq;
 
 namespace MlEco
 {
+    public enum SimulationType { Viviparus, Oviparus }
+
     [Serializable]
-    public class Simulation
+    public abstract class Simulation
     {
-        public int maxCreatures;
         public int generation = 0;
-        public int numDied = 0;
 
         public List<Creature> Creatures = new List<Creature>();
         public List<Creature> CreaturesHolder = new List<Creature>();
@@ -39,8 +39,7 @@ namespace MlEco
 
         public Simulation()
         {
-            this.maxCreatures = INIT_CREATURES_NUM;
-            for (int i=0; i < maxCreatures; i++)
+            for (int i=0; i < INIT_CREATURES_NUM; i++)
             {
                 Creatures.Add(new Creature(new Position(RandomDouble(), RandomDouble())));
             }
@@ -96,9 +95,7 @@ namespace MlEco
                         Creatures.Add(baby);
                     }
                 }
-
-                generation = INIT_CREATURES_NUM != 0 ? (int)(numDied / INIT_CREATURES_NUM) : 0;
-
+                generation = GetGenerationNum();
                 if (reqMarkBestCreatures)
                 {
                     Creatures.Sort();
@@ -132,6 +129,8 @@ namespace MlEco
             }
             isRunning = false;
         }
+
+        protected abstract int GetGenerationNum();
 
         public double GetAvarageFitness()
         {
@@ -175,8 +174,10 @@ namespace MlEco
             }
 
             foreach (Creature creature in deadCreatures) { Creatures.Remove(creature); }
-            numDied += deadCreatures.Count;
+            UpdateNumDied(deadCreatures.Count);
         }
+
+        protected abstract void UpdateNumDied(int numDied);
 
         private void ClearCreaturesCollisions()
         {

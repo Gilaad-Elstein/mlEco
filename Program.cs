@@ -5,23 +5,15 @@ namespace MlEco
     {
         public static void Main()
         {
-            AppMain(/* diagnostics = */ false );
+            AppMain();
         }
 
-        private static void AppMain(bool diagnostics = false)
+        private static void AppMain()
         {
-            if (diagnostics)
-            {
-                Diagnostics.Run();
-                return;
-            }
-            else
-            {
-                Gtk.Application.Init();
-                new MlEcoApp();
-                Gtk.Application.Run();
-                return;
-            }
+            Gtk.Application.Init();
+            new MlEcoApp();
+            Gtk.Application.Run();
+            return;
         }
     }
 }

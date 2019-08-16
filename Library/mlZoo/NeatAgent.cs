@@ -14,44 +14,41 @@ namespace MlEco
             internal override double[] GetOutputs() { return new double[] { }; }
             internal override Agent CrossOver(Agent _partner) { return new NeatAgent(); }
 
-
+            //private static innovatioanindex;
             private List<ConnectionGene> Connections;
             private List<NodeGene> Nodes;
 
             private void AddConnectionMutation()
             {
-                if (RandomDouble() < MutationRate)
+                int nodeInIndex = RandomInt(Connections.Count);
+                int nodeOutIndex = RandomInt(Connections.Count);
+                while (nodeInIndex == nodeOutIndex)
                 {
-                    int nodeInIndex = RandomInt(Connections.Count);
-                    int nodeOutIndex = RandomInt(Connections.Count);
-                    while (nodeInIndex == nodeOutIndex)
-                    {
-                        nodeOutIndex = RandomInt(Connections.Count);
-                    }
-                    NodeGene inNode = Nodes[nodeInIndex];
-                    NodeGene outNode = Nodes[nodeOutIndex];
-
-                    ConnectionGene newConnection = new ConnectionGene(inNode, outNode);
-                    Connections.Add(newConnection);
+                    nodeOutIndex = RandomInt(Connections.Count);
                 }
+                NodeGene inNode = Nodes[nodeInIndex];
+                NodeGene outNode = Nodes[nodeOutIndex];
+
+                ConnectionGene newConnection = new ConnectionGene(inNode, outNode);
+                Connections.Add(newConnection);
             }
 
             private void AddNodeMutation()
             {
-                if (RandomDouble() < MutationRate)
-                {
-                    ConnectionGene connection = Connections[RandomInt(Connections.Count)];
-                    connection.Expressed = false;
-                    NodeGene newNode = new NodeGene();
-                    newNode.Type = NodeGene.NodeType.Hidden;
-                    ConnectionGene newConnection1 = new ConnectionGene(connection.InNode, newNode);
-                    ConnectionGene newConnection2 = new ConnectionGene(newNode, connection.OutNode);
-                    newConnection1.Weight = 1;
-                    newConnection2.Weight = connection.Weight;
-                    Connections.Add(newConnection1);
-                    Connections.Add(newConnection2);
-                }
+                if (Connections.Count == 0) { return; }
 
+                ConnectionGene connection = Connections[RandomInt(Connections.Count)];
+                connection.Expressed = false;
+
+                NodeGene newNode = new NodeGene(NodeGene.NodeType.Hidden, Nodes.Count);
+                ConnectionGene newConnection1 = new ConnectionGene(connection.InNode, newNode);
+                ConnectionGene newConnection2 = new ConnectionGene(newNode, connection.OutNode);
+                newConnection1.Weight = 1;
+                newConnection2.Weight = connection.Weight;
+
+                Connections.Add(newConnection1);
+                Connections.Add(newConnection2);
+                Nodes.Add(newNode);
             }
 
             private class ConnectionGene
@@ -71,10 +68,7 @@ namespace MlEco
 
                 internal void MutateWeight()
                 {
-                    if (RandomDouble() < MutationRate)
-                    {
-                        Weight *= (RandomDouble() * 2 - 1) * MutationRate;
-                    }
+                    Weight *= (RandomDouble() * 2 - 1) * MutationRate;
                 }
             }
 
@@ -83,12 +77,13 @@ namespace MlEco
                 private int Index;
                 internal NodeType Type;
 
-                    internal enum NodeType
-                                    {
-                    Sensor,
-                    Output,
-                    Hidden
-                                    }
+                internal NodeGene(NodeType type, int index)
+                {
+                    this.Type = type;
+                    this.Index = index;
+                }
+
+                internal enum NodeType { Sensor, Output, Hidden }
             }
         }
     }

@@ -41,10 +41,23 @@ namespace MlEco
         {
             if (simulation != null && simulation.isRunning)
                 EndSimulation();
-            simulation = new Simulation();
+            simulation = GetNewSimulation();
 
             simulationThread = new Thread(() => simulation.Run());
             simulationThread.Start();
+        }
+
+        internal static Simulation GetNewSimulation()
+        {
+            switch (SIMULATION_TYPE)
+            {
+                case SimulationType.Viviparus:
+                    return new ViviparusSimulation();
+                case SimulationType.Oviparus:
+                    return new OviparusSimulation();
+                default:
+                    return new ViviparusSimulation();
+            }
         }
 
         private void ToggleTickRate()

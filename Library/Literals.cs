@@ -3,11 +3,13 @@ namespace MlEco
 {
     public static class Literals
     {
+        //NEAT AGENT ONLY COMPAT WITH OVIPARUS SIMULATION
         public static readonly AgentType AGENT_TYPE = AgentType.FCAgent;
+        public static readonly SimulationType SIMULATION_TYPE = SimulationType.Viviparus;
 
-        public static readonly int INIT_CREATURES_NUM = 30;
-        public static readonly int MAX_CREATURES = 60;
-        public static readonly int MIN_CREATURES = 30;
+        public static readonly int INIT_CREATURES_NUM = 80;
+        public static readonly int MAX_CREATURES = 120;
+        public static readonly int MIN_CREATURES = 80;
         public static readonly double INIT_CREATURES_SIZE = 1.25;
         public static readonly int INIT_CREATURE_ENERGY = 1000;
         public static readonly int MATING_CYCLE_LENGTH = 300;

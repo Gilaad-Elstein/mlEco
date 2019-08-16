@@ -34,7 +34,7 @@ namespace MlEco
             }
             else
             {
-                return new Simulation();
+                return MlEcoApp.GetNewSimulation();
             }
             BinaryFormatter formatter = new BinaryFormatter();
             Simulation simulation = (Simulation)formatter.Deserialize(stream);
