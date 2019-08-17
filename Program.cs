@@ -5,7 +5,8 @@ namespace MlEco
     {
         public static void Main()
         {
-            AppMain();
+            mlZoo.NEATMain();
+            //AppMain();
         }
 
         private static void AppMain()

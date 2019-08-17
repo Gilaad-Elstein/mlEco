@@ -92,6 +92,7 @@
     <Compile Include="Library\mlZoo\NeatAgent.cs" />
     <Compile Include="Simulation\NEATSimulation.cs" />
     <Compile Include="Simulation\FCSimulation.cs" />
+    <Compile Include="Library\mlZoo\TopographyViewerApp.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Simulation\" />

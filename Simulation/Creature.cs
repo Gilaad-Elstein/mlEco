@@ -141,8 +141,8 @@ namespace MlEco
             }
             else if (turningRight && !turningLeft)
             {
-                energy -= 0.1;
-                heading -= 5;
+                energy -= 5;
+                heading -= 0.15;
             }
 
             if (movingFarward && !movingBackward)
