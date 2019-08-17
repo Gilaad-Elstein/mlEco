@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using static MlEco.Library;
 namespace MlEco
 {
     public static partial class mlZoo
     {
+        [Serializable]
         public class NeatAgent : Agent
         {
             public NeatAgent()
@@ -11,7 +13,7 @@ namespace MlEco
             }
 
             public override double[] Activate(double[] inputs) { return new double[] { }; }
-            internal override double[] GetOutputs() { return new double[] { }; }
+            internal override double[] GetOutputs() { return new double[] { 0, 0, 0, 0, 0}; }
             internal override Agent CrossOver(Agent _partner) { return new NeatAgent(); }
 
             //private static innovatioanindex;

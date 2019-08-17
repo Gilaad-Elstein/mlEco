@@ -44,7 +44,7 @@ namespace MlEco
                     break;
 
                 case SimulationType.NEAT:
-                    agent = new FCAgent(FC_TOPOLOGY); //HERE:: cheange to neat when implemented neat agent
+                    agent = new NeatAgent();
                     break;
             }
             this.position = position;
@@ -110,6 +110,16 @@ namespace MlEco
             if (!keyboardCreature) isAlive &= (energy > 0 && lifeTime <= CREATURE_MAX_LIFESPAN);
             UpdateMovement();
             rectangle = new RectangleF((float)position.x, (float)position.y, 1.5f * (float)size / 100, 1.5f * (float)ASPECT_RATIO * (float)size / 100);
+
+            if (lifeTime - lastMatedAtTick > MATING_CYCLE_LENGTH)
+            {
+                readyToMate = true;
+            }
+            else
+            {
+                readyToMate = false;
+            }
+
             if (mating)
                 actionColor = new double[] { 1, 0, 0 };
             else

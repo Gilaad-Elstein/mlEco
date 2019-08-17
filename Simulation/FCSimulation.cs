@@ -57,11 +57,6 @@ namespace MlEco
 
             foreach (Creature creature in Creatures)
             {
-                if (ticksElapsed - creature.lastMatedAtTick > MATING_CYCLE_LENGTH)
-                    creature.readyToMate = true;
-                else
-                    creature.readyToMate = false;
-
                 if (creature.readyToMate && creature.mating)
                     matingCreatures.Add(creature);
             }

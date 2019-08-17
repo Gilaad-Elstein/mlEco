@@ -195,7 +195,7 @@ namespace MlEco
 
         protected abstract void UpdateMating();
 
-       protected virtual void KillCreature(Creature c)
+        protected virtual void KillCreature(Creature c)
         {
             Creatures.Remove(c);
         }
