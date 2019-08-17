@@ -104,9 +104,9 @@ namespace MlEco
 
         public void Update()
         {
-            energy -= 1;
+            energy -= 50;
             lifeTime++;
-            if (mating) { energy -= 2; }
+            if (mating) { energy -= 100; }
             if (!keyboardCreature) isAlive &= (energy > 0 && lifeTime <= CREATURE_MAX_LIFESPAN);
             UpdateMovement();
             rectangle = new RectangleF((float)position.x, (float)position.y, 1.5f * (float)size / 100, 1.5f * (float)ASPECT_RATIO * (float)size / 100);
@@ -136,18 +136,18 @@ namespace MlEco
         {
                 if (turningLeft && !turningRight)
             {
-                energy -= 0.1;
+                energy -= 5;
                 heading += 0.15;
             }
             else if (turningRight && !turningLeft)
             {
                 energy -= 0.1;
-                heading -= 0.15;
+                heading -= 5;
             }
 
             if (movingFarward && !movingBackward)
                 {
-                energy -= 0.1;
+                energy -= 5;
                 position = new Position(position.x + 0.01 * Math.Cos(heading),
                                position.y - 0.01 * Math.Sin(heading) * ASPECT_RATIO);
                     
@@ -159,7 +159,7 @@ namespace MlEco
                 }
                 else if (movingBackward && !movingFarward)
                 {
-                energy -= 0.1;
+                energy -= 5;
                 position = new Position(position.x - 0.01 * Math.Cos(heading),
                                position.y + 0.01 * Math.Sin(heading));
                     foreach (double obstructedHeading in obstructedFromHeadings)

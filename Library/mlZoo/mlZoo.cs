@@ -15,7 +15,7 @@ namespace MlEco
         {
             internal static readonly double MutationRate = 0.01;
 
-            public abstract double[] Activate(double[] inputs);
+            internal abstract double[] Activate(double[] inputs);
             internal abstract double[] GetOutputs();
             internal abstract Agent CrossOver(Agent _partner);
         }

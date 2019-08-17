@@ -3,7 +3,7 @@ namespace MlEco
 {
     public static class Literals
     {
-        public static readonly SimulationType SIMULATION_TYPE = SimulationType.NEAT;
+        public static readonly SimulationType SIMULATION_TYPE = SimulationType.FullyConnected;
         public static readonly int[] FC_TOPOLOGY = new int[] { 3, 5, 5 };
 
         public static readonly int COLLISION_SEG_NUM = 5;

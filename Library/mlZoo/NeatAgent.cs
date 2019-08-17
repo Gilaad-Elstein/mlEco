@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using static MlEco.Library;
+
 namespace MlEco
 {
     public static partial class mlZoo
@@ -8,30 +9,81 @@ namespace MlEco
         [Serializable]
         public class NeatAgent : Agent
         {
-            public NeatAgent()
+            private static readonly int NUM_INPUTS = 3;
+            private static readonly int NUM_OUTPUTS = 5;
+
+
+            private static List<(NodeGene, NodeGene)> GlobalInnovationDatabase = new List<(NodeGene, NodeGene)>();
+            private List<ConnectionGene> Connections;
+            private List<NodeGene> Nodes;
+            private List<int> LocalInnovationDatabase = new List<int>();
+
+            private static int GetInnovationNumber((NodeGene, NodeGene) nodes)
             {
+                int innovationIndex = GlobalInnovationDatabase.IndexOf(nodes);
+                if (innovationIndex >= 0)
+                {
+                    return innovationIndex;
+                }
+                else
+                {
+                    GlobalInnovationDatabase.Add(nodes);
+                    return GlobalInnovationDatabase.Count - 1;
+                }
             }
 
-            public override double[] Activate(double[] inputs) { return new double[] { }; }
+            public NeatAgent()
+            {
+                for (int i=0; i < NUM_INPUTS; i++)
+                {
+                    Nodes.Add(new NodeGene(NodeGene.NodeType.Sensor, Nodes.Count));
+                }
+                for (int i = 0; i < NUM_OUTPUTS; i++)
+                {
+                    Nodes.Add(new NodeGene(NodeGene.NodeType.Output, Nodes.Count));
+                }
+            }
+
+            internal override double[] Activate(double[] inputs) 
+            {
+                foreach(NodeGene node in Nodes ) { node.value = 0; }
+                double[] outputs = new double[NUM_OUTPUTS];
+
+                for (int i=0; i < NUM_INPUTS; i++)
+                {
+                    Nodes[i].value = inputs[i];
+                }
+
+                for (int i = 0; i < Connections.Count; i++)
+                {
+                    if (!Connections[i].Expressed) { continue; }
+                    //Connections[i].OutNode.value = 
+                }
+
+                return outputs;
+            }
+
             internal override double[] GetOutputs() { return new double[] { 0, 0, 0, 0, 0}; }
             internal override Agent CrossOver(Agent _partner) { return new NeatAgent(); }
 
-            //private static innovatioanindex;
-            private List<ConnectionGene> Connections;
-            private List<NodeGene> Nodes;
+
 
             private void AddConnectionMutation()
             {
-                int nodeInIndex = RandomInt(Connections.Count);
-                int nodeOutIndex = RandomInt(Connections.Count);
-                while (nodeInIndex == nodeOutIndex)
+                int nodeInIndex;
+                int nodeOutIndex;
+                do
                 {
-                    nodeOutIndex = RandomInt(Connections.Count);
-                }
-                NodeGene inNode = Nodes[nodeInIndex];
-                NodeGene outNode = Nodes[nodeOutIndex];
+                    nodeInIndex = RandomInt(Nodes.Count - NUM_OUTPUTS);
+                    nodeOutIndex = RandomInt(Nodes.Count - NUM_INPUTS) + NUM_INPUTS;
 
-                ConnectionGene newConnection = new ConnectionGene(inNode, outNode);
+                    while (nodeInIndex == nodeOutIndex)
+                    {
+                        nodeOutIndex = RandomInt(Connections.Count);
+                    }
+
+                } while (LocalInnovationDatabase.Contains(GetInnovationNumber((Nodes[nodeInIndex], Nodes[nodeOutIndex]))));
+                ConnectionGene newConnection = new ConnectionGene(Nodes[nodeInIndex], Nodes[nodeOutIndex]);
                 Connections.Add(newConnection);
             }
 
@@ -65,7 +117,8 @@ namespace MlEco
                 {
                     this.InNode = inNode;
                     this.OutNode = outNode;
-                    Weight = RandomDouble() * 2 - 1;
+                    this.Weight = RandomDouble() * 2 - 1;
+                    this.InnovationNumber = GetInnovationNumber(new ValueTuple<NodeGene, NodeGene>(InNode, OutNode));
                 }
 
                 internal void MutateWeight()
@@ -78,6 +131,7 @@ namespace MlEco
             {
                 private int Index;
                 internal NodeType Type;
+                internal double value;
 
                 internal NodeGene(NodeType type, int index)
                 {

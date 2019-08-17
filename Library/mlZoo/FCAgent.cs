@@ -36,7 +36,7 @@ namespace MlEco
                     layers[i] = new Layer(topology, i);
             }
 
-            public override double[] Activate(double[] inputs)
+            internal override double[] Activate(double[] inputs)
             {
                 layers[0].Activate(inputs);
                 for (int i = 1; i < topology.Length; i++)
