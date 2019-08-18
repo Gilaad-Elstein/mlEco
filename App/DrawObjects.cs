@@ -48,11 +48,8 @@ namespace MlEco
                         creature.size,
                         BLACK,
                         creature.position,
-                        new Position(creature.size  * Math.Cos(creature.heading ) / 100,
-                              -creature.size * Math.Sin(creature.heading) * ASPECT_RATIO / 100),
-                        creature.heading
-
-                    );
+                        new Position(creature.size  * Math.Cos(creature.heading ) / 100 + creature.position.x,
+                              -creature.size * Math.Sin(creature.heading) * ASPECT_RATIO / 100 + creature.position.y));
             }
         }
 

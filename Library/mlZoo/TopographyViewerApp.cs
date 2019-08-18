@@ -3,6 +3,7 @@ using Gtk;
 using static MlEco.mlZoo;
 using static MlEco.mlZoo.NeatAgent;
 using static MlEco.Library;
+using static MlEco.Literals;
 
 
 namespace MlEco
@@ -22,7 +23,7 @@ namespace MlEco
             DeleteEvent += delegate { Application.Quit(); };
             //ButtonPressEvent += ButtonPress;
             //KeyPressEvent += KeyPress;
-            KeyReleaseEvent += delegate (object sender, KeyReleaseEventArgs args)
+            KeyReleaseEvent += delegate(object sender, KeyReleaseEventArgs args)
                 { if (args.Event.Key == Gdk.Key.Escape) { Application.Quit(); } };
             AddEvents((int)Gdk.EventMask.ButtonPressMask);
 
@@ -39,7 +40,7 @@ namespace MlEco
 
         protected virtual void OnExpose(object sender, ExposeEventArgs args)
         {
-            for (int i=0; i < NUM_INPUTS; i++)
+            for (int i=0; i < agent.Nodes.Count; i++)
             {
                 DrawCircle(
                     drawingArea, 
@@ -48,21 +49,20 @@ namespace MlEco
                     2, 
                     new double[] { 1, 1, 1 }, 
                     new double[] { 0, 0, 0 }, 
-                    new Position(0.1, 
-                    (i+0.5)/NUM_INPUTS), 2);
+                    agent.Nodes[i].DrawPosition, 
+                    2);
             }
 
-            for (int i = 0; i < NUM_OUTPUTS; i++)
+            for (int i=0; i < agent.Connections.Count; i++)
             {
-                DrawCircle(
-                    drawingArea, 
-                    Allocation.Width, 
-                    Allocation.Height, 
-                    2, 
-                    new double[] { 1, 1, 1 }, 
-                    new double[] { 0, 0, 0 }, 
-                    new Position(0.9, (i + 0.5) / NUM_OUTPUTS), 
-                    2);
+                DrawLine(
+                    drawingArea,
+                    Allocation.Width,
+                    Allocation.Height,
+                    2,
+                    BLACK,
+                    agent.Connections[i].InNode.DrawPosition,
+                    agent.Connections[i].OutNode.DrawPosition);
             }
         }
 

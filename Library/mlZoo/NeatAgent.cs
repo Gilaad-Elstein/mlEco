@@ -9,6 +9,10 @@ namespace MlEco
         public static void NEATMain()
         {
             NeatAgent agent = new NeatAgent();
+            NeatAgent.ConnectionGene connection = new NeatAgent.ConnectionGene(
+                                                                        agent.Nodes[0],
+                                                                        agent.Nodes[4]);
+            agent.Connections.Add(connection);
 
             Gtk.Application.Init();
             new TopographyViewerApp(agent);
@@ -24,8 +28,8 @@ namespace MlEco
 
 
             private static List<(NodeGene, NodeGene)> GlobalInnovationDatabase = new List<(NodeGene, NodeGene)>();
-            private List<ConnectionGene> Connections = new List<ConnectionGene>();
-            private List<NodeGene> Nodes = new List<NodeGene>();
+            internal List<ConnectionGene> Connections = new List<ConnectionGene>();
+            internal List<NodeGene> Nodes = new List<NodeGene>();
             private List<int> LocalInnovationDatabase = new List<int>();
 
             private static int GetInnovationNumber((NodeGene, NodeGene) nodes)
@@ -104,7 +108,7 @@ namespace MlEco
                 Nodes.Add(newNode);
             }
 
-            private class ConnectionGene
+            internal class ConnectionGene
             {
                 internal NodeGene InNode;
                 internal NodeGene OutNode;
@@ -136,16 +140,48 @@ namespace MlEco
                 }
             }
 
-            private class NodeGene
+            internal class NodeGene
             {
                 private readonly int Index;
                 internal NodeType Type;
                 internal double value;
+                internal Position DrawPosition;
 
                 internal NodeGene(NodeType type, int index)
                 {
+                    if (type == NodeType.Hidden)
+                    {
+                        throw new ArgumentException("Cannot construct hidden node without DrawPosistion");
+                    }
+
                     this.Type = type;
                     this.Index = index;
+                    if (Type == NodeType.Sensor)
+                    {
+                        DrawPosition = new Position(0.1, (double)(index + 0.5) / NUM_INPUTS);
+                    }
+                    else if (Type == NodeType.Output)
+                    {
+                        DrawPosition = new Position(0.9, (double)(index + 0.5 - NUM_INPUTS) / NUM_OUTPUTS);
+                    }
+                }
+
+                internal NodeGene(NodeType type, int index, Position position)
+                {
+                    if (type != NodeType.Hidden)
+                    {
+                        throw new ArgumentException("Cannot specify position for none hidden node");
+                    }
+
+                    this.Type = type;
+                    this.Index = index;
+                    this.DrawPosition = position;
+                }
+
+
+                internal void SetPosition(Position position)
+                {
+                    DrawPosition = position;
                 }
 
                 internal enum NodeType { Sensor, Output, Hidden }

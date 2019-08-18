@@ -45,8 +45,8 @@ namespace MlEco
                                     double lineWidth,
                                     Cairo.Color lineColor,
                                     Position positionStart,
-                                    Position positionEnd,
-                                    double heading)
+                                    Position positionEnd
+                                    )
         {
             Cairo.Context cr = Gdk.CairoHelper.Create(da.GdkWindow);
 
@@ -54,7 +54,8 @@ namespace MlEco
             cr.LineWidth = lineWidth * width / (3*100f);
             cr.SetSourceColor(lineColor);
             cr.MoveTo(0, 0);
-            cr.LineTo(positionEnd.x * width, positionEnd.y * height);
+
+            cr.LineTo((positionEnd.x - positionStart.x) * width, (positionEnd.y - positionStart.y) * height );
 
             cr.Stroke();
 
