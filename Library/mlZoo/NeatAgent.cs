@@ -40,7 +40,7 @@ namespace MlEco
                 }
                 for (int i=0; i <NUM_OUTPUTS; i++)
                 {
-                    outputs[i] = Nodes[i + NUM_INPUTS].ActivateNode();
+                    outputs[i] = ActivateNode(i + NUM_INPUTS);
                 }
 
                 return outputs;
