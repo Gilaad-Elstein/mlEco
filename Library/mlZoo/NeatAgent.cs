@@ -12,24 +12,77 @@ namespace MlEco
         {
             public static readonly int NUM_INPUTS = 3;
             public static readonly int NUM_OUTPUTS = 5;
+            private static List<(NodeGene, NodeGene)> GlobalInnovationSet = new List<(NodeGene, NodeGene)>();
 
-
-            private static List<(NodeGene, NodeGene)> GlobalInnovationDatabase = new List<(NodeGene, NodeGene)>();
             internal List<ConnectionGene> Connections = new List<ConnectionGene>();
             internal List<NodeGene> Nodes = new List<NodeGene>();
-            private List<int> LocalInnovationDatabase = new List<int>();
+            private List<int> LocalInnovationSet = new List<int>();
+
+            public NeatAgent()
+            {
+                for (int i = 0; i < NUM_INPUTS; i++)
+                {
+                    Nodes.Add(new NodeGene(NodeGene.NodeType.Sensor, Nodes.Count));
+                }
+                for (int i = 0; i < NUM_OUTPUTS; i++)
+                {
+                    Nodes.Add(new NodeGene(NodeGene.NodeType.Output, Nodes.Count));
+                }
+            }
+
+            internal override double[] Activate(double[] inputs)
+            {
+                double[] outputs = new double[NUM_OUTPUTS];
+
+                for (int i=0; i < NUM_INPUTS; i++)
+                {
+                    Nodes[i].value = inputs[i];
+                }
+                for (int i=0; i <NUM_OUTPUTS; i++)
+                {
+                    outputs[i] = Nodes[i + NUM_INPUTS].ActivateNode();
+                }
+
+                return outputs;
+            }
+
+            internal double ActivateNode(int nodeIndex)
+            {
+                if (Nodes[nodeIndex].Type == NodeGene.NodeType.Sensor)
+                {
+                    return Nodes[nodeIndex].value;
+                }
+                else
+                {
+                    double sum = 0;
+                    for (int i=0; i < Connections.Count; i++)
+                    {
+                        if (!(Connections[i].OutNode.Index == nodeIndex))
+                        {
+                            continue;
+                        }
+                        sum += ActivateNode(Connections[i].InNode.Index);
+                    }
+                    return sum;
+                }
+
+            }
+
+            internal override double[] GetOutputs() { return new double[] { 0, 0, 0, 0, 0 }; }
+
+            internal override Agent CrossOver(Agent _partner) { return new NeatAgent(); }
 
             private static int GetInnovationNumber((NodeGene, NodeGene) nodes)
             {
-                int innovationIndex = GlobalInnovationDatabase.IndexOf(nodes);
+                int innovationIndex = GlobalInnovationSet.IndexOf(nodes);
                 if (innovationIndex >= 0)
                 {
                     return innovationIndex;
                 }
                 else
                 {
-                    GlobalInnovationDatabase.Add(nodes);
-                    return GlobalInnovationDatabase.Count - 1;
+                    GlobalInnovationSet.Add(nodes);
+                    return GlobalInnovationSet.Count - 1;
                 }
             }
 
@@ -81,31 +134,6 @@ namespace MlEco
                 Connections[RandomInt(Connections.Count)].MutateWeightShift();
             }
 
-            public NeatAgent()
-            {
-                for (int i=0; i < NUM_INPUTS; i++)
-                {
-                    Nodes.Add(new NodeGene(NodeGene.NodeType.Sensor, Nodes.Count));
-                }
-                for (int i = 0; i < NUM_OUTPUTS; i++)
-                {
-                    Nodes.Add(new NodeGene(NodeGene.NodeType.Output, Nodes.Count));
-                }
-            }
-
-            internal override double[] Activate(double[] inputs) 
-            {
-                foreach(NodeGene node in Nodes ) { node.value = 0; }
-                double[] outputs = new double[NUM_OUTPUTS];
-
-                return outputs;
-            }
-
-            internal override double[] GetOutputs() { return new double[] { 0, 0, 0, 0, 0}; }
-            internal override Agent CrossOver(Agent _partner) { return new NeatAgent(); }
-
-
-
             private void AddConnectionMutation()
             {
                 int nodeInIndex;
@@ -128,7 +156,7 @@ namespace MlEco
                            Nodes[nodeInIndex].Type == NodeGene.NodeType.Output ||
                            Nodes[nodeOutIndex].Type == NodeGene.NodeType.Sensor);
 
-                } while (LocalInnovationDatabase.Contains(GetInnovationNumber((Nodes[nodeInIndex], Nodes[nodeOutIndex]))));
+                } while (LocalInnovationSet.Contains(GetInnovationNumber((Nodes[nodeInIndex], Nodes[nodeOutIndex]))));
                 ConnectionGene newConnection = new ConnectionGene(Nodes[nodeInIndex], Nodes[nodeOutIndex]);
                 AddConnection(newConnection);
             }
@@ -136,7 +164,7 @@ namespace MlEco
             private void AddConnection(ConnectionGene newConnection)
             {
                 Connections.Add(newConnection);
-                LocalInnovationDatabase.Add(newConnection.InnovationNumber);
+                LocalInnovationSet.Add(newConnection.InnovationNumber);
             }
 
             private void AddNodeMutation()
@@ -201,7 +229,7 @@ namespace MlEco
 
             internal class NodeGene
             {
-                private readonly int Index;
+                internal readonly int Index;
                 internal NodeType Type;
                 internal double value;
                 internal Position DrawPosition;
@@ -236,7 +264,6 @@ namespace MlEco
                     this.Index = index;
                     this.DrawPosition = position;
                 }
-
 
                 internal void SetPosition(Position position)
                 {
