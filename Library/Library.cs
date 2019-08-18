@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using Gtk;
+using static MlEco.Literals;
 
 namespace MlEco
 {
@@ -12,9 +14,69 @@ namespace MlEco
         private static Random seededRandom = new Random(0);
         public static bool diagnosticsMode = false;
 
-        public const double twoPi = 2*Math.PI;
+        public const double twoPi = 2 * Math.PI;
         public const double Pi = Math.PI;
-        public const double halfPi = Math.PI/2;
+        public const double halfPi = Math.PI / 2;
+
+        public static void DrawCircle(DrawingArea da,
+                                      int width,
+                                      int height,
+                                      double lineWidth,
+                                      double[] lineColor,
+                                      double[] fillColor,
+                                      Position position,
+                                      double size)
+        {
+            Cairo.Context cr = Gdk.CairoHelper.Create(da.GdkWindow);
+            cr.SetSourceRGB(lineColor[0], lineColor[1], lineColor[2]);
+            cr.LineWidth = lineWidth;
+            cr.Translate(position.x * width, position.y * height);
+            cr.Arc(0, 0, size * width / 100f, 0, 2 * Math.PI);
+            cr.StrokePreserve();
+            cr.SetSourceRGB(fillColor[0], fillColor[1], fillColor[2]);
+            cr.Fill();
+            ((IDisposable)cr.GetTarget()).Dispose();
+            ((IDisposable)cr).Dispose();
+        }
+
+        public static void DrawLine(DrawingArea da,
+                                    int width,
+                                    int height,
+                                    double lineWidth,
+                                    Cairo.Color lineColor,
+                                    Position positionStart,
+                                    Position positionEnd,
+                                    double heading)
+        {
+            Cairo.Context cr = Gdk.CairoHelper.Create(da.GdkWindow);
+
+            cr.Translate(positionStart.x * width, positionStart.y * height);
+            cr.LineWidth = lineWidth * width / (3*100f);
+            cr.SetSourceColor(lineColor);
+            cr.MoveTo(0, 0);
+            cr.LineTo(positionEnd.x * width, positionEnd.y * height);
+
+            cr.Stroke();
+
+            ((IDisposable) cr.GetTarget()).Dispose();
+            ((IDisposable) cr).Dispose();
+        }
+        public static void DrawCaption(DrawingArea da, int width, int height, string text, double posX, double posY)
+        {
+            Cairo.Context texTcr = Gdk.CairoHelper.Create(da.GdkWindow);
+
+            texTcr.SelectFontFace("", Cairo.FontSlant.Normal, Cairo.FontWeight.Bold);
+            texTcr.SetFontSize(3.75 * width / 100f);
+            texTcr.MoveTo(posX, posY);
+            texTcr.TextPath(text);
+            texTcr.SetSourceRGB(1, 1, 1);
+            texTcr.FillPreserve();
+            texTcr.LineWidth = width / 100f / 3;
+            texTcr.SetSourceRGB(0, 0, 0);
+            texTcr.Stroke();
+            texTcr.Dispose();
+            return;
+        }
 
         public static void Save(Simulation simulation)
         {

@@ -1,8 +1,9 @@
 ﻿using System;
 using Gtk;
 using static MlEco.mlZoo;
-using MlEco;
 using static MlEco.mlZoo.NeatAgent;
+using static MlEco.Library;
+
 
 namespace MlEco
 {
@@ -40,27 +41,29 @@ namespace MlEco
         {
             for (int i=0; i < NUM_INPUTS; i++)
             {
-                DrawCircle(2, new double[] { 1, 1, 1 }, new double[] { 0, 0, 0 }, new Position(0.1, (i+0.5)/NUM_INPUTS), 0.03);
+                DrawCircle(
+                    drawingArea, 
+                    Allocation.Width, 
+                    Allocation.Height, 
+                    2, 
+                    new double[] { 1, 1, 1 }, 
+                    new double[] { 0, 0, 0 }, 
+                    new Position(0.1, 
+                    (i+0.5)/NUM_INPUTS), 2);
             }
 
             for (int i = 0; i < NUM_OUTPUTS; i++)
             {
-                DrawCircle(2, new double[] { 1, 1, 1 }, new double[] { 0, 0, 0 }, new Position(0.9, (i + 0.5) / NUM_OUTPUTS), 0.03);
+                DrawCircle(
+                    drawingArea, 
+                    Allocation.Width, 
+                    Allocation.Height, 
+                    2, 
+                    new double[] { 1, 1, 1 }, 
+                    new double[] { 0, 0, 0 }, 
+                    new Position(0.9, (i + 0.5) / NUM_OUTPUTS), 
+                    2);
             }
-        }
-
-        private void DrawCircle(double lineWidth, double[] lineColor, double[] fillColor, Position position, double size)
-        {
-            Cairo.Context cr = Gdk.CairoHelper.Create(drawingArea.GdkWindow);
-            cr.SetSourceRGB(lineColor[0], lineColor[1], lineColor[2]);
-            cr.LineWidth = lineWidth;
-            cr.Translate(position.x * Allocation.Width, position.y * Allocation.Height);
-            cr.Arc(0, 0, size * Allocation.Width, 0, 2 * Math.PI);
-            cr.StrokePreserve();
-            cr.SetSourceRGB(fillColor[0], fillColor[1], fillColor[2]);
-            cr.Fill();
-            ((IDisposable)cr.GetTarget()).Dispose();
-            ((IDisposable)cr).Dispose();
         }
 
     }
