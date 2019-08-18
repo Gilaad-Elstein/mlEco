@@ -13,9 +13,9 @@ namespace MlEco
         private DrawingArea drawingArea;
         private NeatAgent agent;
 
-        public TopographyViewerApp(NeatAgent _agent) : base("TopographyViewer")
+        public TopographyViewerApp() : base("TopographyViewer")
         {
-            this.agent = _agent;
+            agent = new NeatAgent();
 
             SetSizeRequest(720, 450);
             SetPosition(WindowPosition.Center);
@@ -23,8 +23,7 @@ namespace MlEco
             DeleteEvent += delegate { Application.Quit(); };
             //ButtonPressEvent += ButtonPress;
             //KeyPressEvent += KeyPress;
-            KeyReleaseEvent += delegate(object sender, KeyReleaseEventArgs args)
-                { if (args.Event.Key == Gdk.Key.Escape) { Application.Quit(); } };
+            KeyReleaseEvent += OnKeyPress;
             AddEvents((int)Gdk.EventMask.ButtonPressMask);
 
             drawingArea = new DrawingArea();
@@ -38,6 +37,29 @@ namespace MlEco
             ShowAll();
         }
 
+        private void OnKeyPress(object sender, KeyReleaseEventArgs args)
+        {
+            switch (args.Event.Key)
+            {
+                case Gdk.Key.Escape: 
+                    Application.Quit();
+                    break;
+                case Gdk.Key.space:
+                    agent.ForceMutate(1);
+                    drawingArea.QueueDraw();
+                    break;
+                case Gdk.Key.Return:
+                    agent.ForceMutate(2);
+                    drawingArea.QueueDraw();
+                    break;
+                case Gdk.Key.R:
+                case Gdk.Key.r:
+                    agent = new NeatAgent();
+                    drawingArea.QueueDraw();
+                    break;
+            }
+        }
+
         protected virtual void OnExpose(object sender, ExposeEventArgs args)
         {
             for (int i=0; i < agent.Nodes.Count; i++)
@@ -47,14 +69,16 @@ namespace MlEco
                     Allocation.Width, 
                     Allocation.Height, 
                     2, 
-                    new double[] { 1, 1, 1 }, 
-                    new double[] { 0, 0, 0 }, 
+                    agent.Nodes[i].Type == NodeGene.NodeType.Hidden ? new double[] { 0, 0, 0 } : new double[] { 1, 1, 1 },
+                    agent.Nodes[i].Type == NodeGene.NodeType.Hidden ? new double[] { 1, 1, 1 } : new double[] { 0, 0, 0 },
                     agent.Nodes[i].DrawPosition, 
                     2);
             }
 
             for (int i=0; i < agent.Connections.Count; i++)
             {
+                if (!agent.Connections[i].Expressed) { continue; }
+
                 DrawLine(
                     drawingArea,
                     Allocation.Width,

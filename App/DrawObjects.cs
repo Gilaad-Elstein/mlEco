@@ -61,7 +61,7 @@ namespace MlEco
                     drawingArea,
                     Allocation.Width,
                     Allocation.Height,
-                    food.size * sUnit * 0.50,
+                    food.size * sUnit * 0.3,
                     FOOD_LINE_COLOR,
                     FOOD_FILL_COLOR,
                     food.position,

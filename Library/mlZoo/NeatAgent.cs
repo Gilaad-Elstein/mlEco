@@ -6,19 +6,6 @@ namespace MlEco
 {
     public static partial class mlZoo
     {
-        public static void NEATMain()
-        {
-            NeatAgent agent = new NeatAgent();
-            NeatAgent.ConnectionGene connection = new NeatAgent.ConnectionGene(
-                                                                        agent.Nodes[0],
-                                                                        agent.Nodes[4]);
-            agent.Connections.Add(connection);
-
-            Gtk.Application.Init();
-            new TopographyViewerApp(agent);
-            Gtk.Application.Run();
-            return;
-        }
 
         [Serializable]
         public class NeatAgent : Agent
@@ -44,6 +31,24 @@ namespace MlEco
                     GlobalInnovationDatabase.Add(nodes);
                     return GlobalInnovationDatabase.Count - 1;
                 }
+            }
+
+            internal void ForceMutate(int type = 0)
+            {
+                if (type == 0)
+                {
+                    type = RandomInt(5) + 1;
+                }
+                switch (type)
+                {
+                    case 1: 
+                        AddConnectionMutation();
+                        break;
+                    case 2:
+                        AddNodeMutation();
+                        break;
+                }
+
             }
 
             public NeatAgent()
@@ -75,19 +80,33 @@ namespace MlEco
             {
                 int nodeInIndex;
                 int nodeOutIndex;
+                int attempts = 0;
                 do
                 {
-                    nodeInIndex = RandomInt(Nodes.Count - NUM_OUTPUTS);
-                    nodeOutIndex = RandomInt(Nodes.Count - NUM_INPUTS) + NUM_INPUTS;
-
-                    while (nodeInIndex == nodeOutIndex)
+                    attempts++;
+                    if (attempts > 100)
                     {
-                        nodeOutIndex = RandomInt(Nodes.Count - NUM_INPUTS) + NUM_INPUTS;
+                        Console.WriteLine("Failed to add connection mutation.");
+                        return;
                     }
+                    do
+                    {
+                        nodeInIndex = RandomInt(Nodes.Count);
+                        nodeOutIndex = RandomInt(Nodes.Count);
+                    }
+                    while (nodeInIndex >= nodeOutIndex ||
+                           Nodes[nodeInIndex].Type == NodeGene.NodeType.Output ||
+                           Nodes[nodeOutIndex].Type == NodeGene.NodeType.Sensor);
 
                 } while (LocalInnovationDatabase.Contains(GetInnovationNumber((Nodes[nodeInIndex], Nodes[nodeOutIndex]))));
                 ConnectionGene newConnection = new ConnectionGene(Nodes[nodeInIndex], Nodes[nodeOutIndex]);
+                AddConnection(newConnection);
+            }
+
+            private void AddConnection(ConnectionGene newConnection)
+            {
                 Connections.Add(newConnection);
+                LocalInnovationDatabase.Add(newConnection.InnovationNumber);
             }
 
             private void AddNodeMutation()
@@ -97,7 +116,11 @@ namespace MlEco
                 ConnectionGene connection = Connections[RandomInt(Connections.Count)];
                 connection.Expressed = false;
 
-                NodeGene newNode = new NodeGene(NodeGene.NodeType.Hidden, Nodes.Count);
+                NodeGene newNode = new NodeGene(NodeGene.NodeType.Hidden, 
+                                                Nodes.Count, 
+                                                new Position(
+                                                    (connection.InNode.DrawPosition.x + connection.OutNode.DrawPosition.x)/2,
+                                                    (connection.InNode.DrawPosition.y + connection.OutNode.DrawPosition.y) / 2));
                 ConnectionGene newConnection1 = new ConnectionGene(connection.InNode, newNode);
                 ConnectionGene newConnection2 = new ConnectionGene(newNode, connection.OutNode);
                 newConnection1.Weight = 1;
@@ -114,7 +137,7 @@ namespace MlEco
                 internal NodeGene OutNode;
                 internal double Weight;
                 internal bool Expressed = true;
-                private readonly int InnovationNumber;
+                internal readonly int InnovationNumber;
 
                 internal ConnectionGene(NodeGene inNode, NodeGene outNode)
                 {

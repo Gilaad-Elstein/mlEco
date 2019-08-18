@@ -5,16 +5,15 @@ namespace MlEco
     {
         public static void Main()
         {
-            mlZoo.NEATMain();
-            //AppMain();
+            Gtk.Application.Init();
+            new TopographyViewerApp();
+            Gtk.Application.Run();
+            return;
         }
 
         private static void AppMain()
         {
-            Gtk.Application.Init();
-            new MlEcoApp();
-            Gtk.Application.Run();
-            return;
+
         }
     }
 }
