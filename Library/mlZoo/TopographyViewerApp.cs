@@ -44,18 +44,37 @@ namespace MlEco
                 case Gdk.Key.Escape: 
                     Application.Quit();
                     break;
-                case Gdk.Key.space:
+                case Gdk.Key.Key_0:
+                    agent.ForceMutate();
+                    drawingArea.QueueDraw();
+                    break;
+                case Gdk.Key.Key_1:
                     agent.ForceMutate(1);
                     drawingArea.QueueDraw();
                     break;
-                case Gdk.Key.Return:
+                case Gdk.Key.Key_2:
                     agent.ForceMutate(2);
+                    drawingArea.QueueDraw();
+                    break;
+                case Gdk.Key.Key_3:
+                    agent.ForceMutate(3);
+                    drawingArea.QueueDraw();
+                    break;
+                case Gdk.Key.Key_4:
+                    agent.ForceMutate(4);
+                    drawingArea.QueueDraw();
+                    break;
+                case Gdk.Key.Key_5:
+                    agent.ForceMutate(5);
                     drawingArea.QueueDraw();
                     break;
                 case Gdk.Key.R:
                 case Gdk.Key.r:
                     agent = new NeatAgent();
                     drawingArea.QueueDraw();
+                    break;
+                default:
+                    Here(args.Event.Key);
                     break;
             }
         }
@@ -78,13 +97,15 @@ namespace MlEco
             for (int i=0; i < agent.Connections.Count; i++)
             {
                 if (!agent.Connections[i].Expressed) { continue; }
-
+                Cairo.Color color = new Cairo.Color(agent.Connections[i].DrawColor[0],
+                                                    agent.Connections[i].DrawColor[1],
+                                                    agent.Connections[i].DrawColor[2]);
                 DrawLine(
                     drawingArea,
                     Allocation.Width,
                     Allocation.Height,
-                    2,
-                    BLACK,
+                    Math.Abs(10 * agent.Connections[i].Weight),
+                    color,
                     agent.Connections[i].InNode.DrawPosition,
                     agent.Connections[i].OutNode.DrawPosition);
             }

@@ -47,8 +47,38 @@ namespace MlEco
                     case 2:
                         AddNodeMutation();
                         break;
+                    case 3:
+                        ShiftWeightMutation();
+                        break;
+                    case 4:
+                        RandomWeightMutation();
+                        break;
+                    case 5:
+                        ExpressedMutation();
+                        break;
                 }
 
+            }
+
+            private void ExpressedMutation()
+            {
+                if (Connections.Count == 0) { return; }
+
+                Connections[RandomInt(Connections.Count)].MutateExpressed();
+            }
+
+            private void RandomWeightMutation()
+            {
+                if (Connections.Count == 0) { return; }
+
+                Connections[RandomInt(Connections.Count)].MutateWeightRandom();
+            }
+
+            private void ShiftWeightMutation()
+            {
+                if (Connections.Count == 0) { return; }
+
+                Connections[RandomInt(Connections.Count)].MutateWeightShift();
             }
 
             public NeatAgent()
@@ -112,10 +142,14 @@ namespace MlEco
             private void AddNodeMutation()
             {
                 if (Connections.Count == 0) { return; }
+                ConnectionGene connection;
+                do
+                {
+                    connection = Connections[RandomInt(Connections.Count)];
+                }
+                while (connection.Expressed == false);
 
-                ConnectionGene connection = Connections[RandomInt(Connections.Count)];
                 connection.Expressed = false;
-
                 NodeGene newNode = new NodeGene(NodeGene.NodeType.Hidden, 
                                                 Nodes.Count, 
                                                 new Position(
@@ -138,6 +172,7 @@ namespace MlEco
                 internal double Weight;
                 internal bool Expressed = true;
                 internal readonly int InnovationNumber;
+                internal readonly double[] DrawColor;
 
                 internal ConnectionGene(NodeGene inNode, NodeGene outNode)
                 {
@@ -145,11 +180,12 @@ namespace MlEco
                     this.OutNode = outNode;
                     this.Weight = RandomDouble() * 2 - 1;
                     this.InnovationNumber = GetInnovationNumber(new ValueTuple<NodeGene, NodeGene>(InNode, OutNode));
+                    this.DrawColor = new double[] { RandomDouble(), RandomDouble(), RandomDouble() };
                 }
 
                 internal void MutateWeightShift()
                 {
-                    Weight *= (RandomDouble() * 2 - 1) * MutationRate;
+                    Weight += (RandomDouble() * 2 - 1) * MutationRate;
                 }
 
                 internal void MutateWeightRandom()
