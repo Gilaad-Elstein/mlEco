@@ -38,9 +38,10 @@ namespace MlEco
                 {
                     Nodes[i].value = inputs[i];
                 }
-                for (int i=0; i <NUM_OUTPUTS; i++)
+                for (int i=0; i < NUM_OUTPUTS; i++)
                 {
                     outputs[i] = ActivateNode(i + NUM_INPUTS);
+                    Nodes[i + NUM_INPUTS].value = outputs[i];
                 }
 
                 return outputs;
@@ -57,18 +58,30 @@ namespace MlEco
                     double sum = 0;
                     for (int i=0; i < Connections.Count; i++)
                     {
-                        if (!(Connections[i].OutNode.Index == nodeIndex))
+                        if (!(Connections[i].OutNode.Index == nodeIndex) ||
+                            !(Connections[i].Expressed))
                         {
                             continue;
                         }
-                        sum += ActivateNode(Connections[i].InNode.Index);
+                        sum += Connections[i].Weight * ActivateNode(Connections[i].InNode.Index);
                     }
+                    Nodes[nodeIndex].value = sum;
                     return sum;
                 }
 
             }
 
             internal override double[] GetOutputs() { return new double[] { 0, 0, 0, 0, 0 }; }
+
+            internal double[] ActivateWithRandomInputs()
+            {
+                double[] inputs = new double[NUM_INPUTS];
+                for (int i=0; i < NUM_INPUTS; i++)
+                {
+                    inputs[i] = RandomDouble() * 2 - 1;
+                }
+                return Activate(inputs);
+            }
 
             internal override Agent CrossOver(Agent _partner) { return new NeatAgent(); }
 

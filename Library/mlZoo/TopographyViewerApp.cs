@@ -73,6 +73,10 @@ namespace MlEco
                     agent = new NeatAgent();
                     drawingArea.QueueDraw();
                     break;
+                case Gdk.Key.space:
+                    agent.ActivateWithRandomInputs();
+                    drawingArea.QueueDraw();
+                    break;
                 default:
                     Here(args.Event.Key);
                     break;
@@ -81,19 +85,6 @@ namespace MlEco
 
         protected virtual void OnExpose(object sender, ExposeEventArgs args)
         {
-            for (int i=0; i < agent.Nodes.Count; i++)
-            {
-                DrawCircle(
-                    drawingArea, 
-                    Allocation.Width, 
-                    Allocation.Height, 
-                    2, 
-                    agent.Nodes[i].Type == NodeGene.NodeType.Hidden ? new double[] { 0, 0, 0 } : new double[] { 1, 1, 1 },
-                    agent.Nodes[i].Type == NodeGene.NodeType.Hidden ? new double[] { 1, 1, 1 } : new double[] { 0, 0, 0 },
-                    agent.Nodes[i].DrawPosition, 
-                    2);
-            }
-
             for (int i=0; i < agent.Connections.Count; i++)
             {
                 if (!agent.Connections[i].Expressed) { continue; }
@@ -108,6 +99,28 @@ namespace MlEco
                     color,
                     agent.Connections[i].InNode.DrawPosition,
                     agent.Connections[i].OutNode.DrawPosition);
+            }
+
+            for (int i = 0; i < agent.Nodes.Count; i++)
+            {
+                DrawCircle(
+                    drawingArea,
+                    Allocation.Width,
+                    Allocation.Height,
+                    2,
+                    agent.Nodes[i].Type == NodeGene.NodeType.Hidden ? new double[] { 0, 0, 0 } : new double[] { 1, 1, 1 },
+                    agent.Nodes[i].Type == NodeGene.NodeType.Hidden ? new double[] { 1, 1, 1 } : new double[] { 0, 0, 0 },
+                    agent.Nodes[i].DrawPosition,
+                    2);
+                DrawCaption(
+                    drawingArea,
+                    Allocation.Width,
+                    Allocation.Height,
+                    String.Format("{0:.##}", agent.Nodes[i].value),
+                    agent.Nodes[i].DrawPosition.x - 0.035,
+                    agent.Nodes[i].DrawPosition.y + 0.02,
+                    3);
+
             }
         }
 

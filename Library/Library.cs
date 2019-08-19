@@ -61,12 +61,18 @@ namespace MlEco
             ((IDisposable) cr.GetTarget()).Dispose();
             ((IDisposable) cr).Dispose();
         }
-        public static void DrawCaption(DrawingArea da, int width, int height, string text, double posX, double posY)
+        public static void DrawCaption(DrawingArea da, int width, int height, string text, double posX, double posY, double size = 3.75)
         {
+            if (posX <=1 && posY <= 1)
+            {
+                posX *= width;
+                posY *= height;
+            }
+
             Cairo.Context texTcr = Gdk.CairoHelper.Create(da.GdkWindow);
 
             texTcr.SelectFontFace("", Cairo.FontSlant.Normal, Cairo.FontWeight.Bold);
-            texTcr.SetFontSize(3.75 * width / 100f);
+            texTcr.SetFontSize(size * width / 100f);
             texTcr.MoveTo(posX, posY);
             texTcr.TextPath(text);
             texTcr.SetSourceRGB(1, 1, 1);
