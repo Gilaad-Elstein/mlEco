@@ -11,11 +11,14 @@ namespace MlEco
     public class TopographyViewerApp : Window
     {
         private DrawingArea drawingArea;
-        private NeatAgent agent;
+        private NeatAgent partner1;
+        private NeatAgent partner2;
+        private NeatAgent baby;
+        private NeatAgent currentAgent;
 
         public TopographyViewerApp() : base("TopographyViewer")
         {
-            agent = new NeatAgent();
+            SetAgents();
 
             SetSizeRequest(720, 450);
             SetPosition(WindowPosition.Center);
@@ -37,6 +40,22 @@ namespace MlEco
             ShowAll();
         }
 
+        private void SetAgents()
+        {
+            partner1 = new NeatAgent();
+            partner2 = new NeatAgent();
+
+            for (int i = 0; i < 15; i++)
+            {
+                partner1.ForceMutate();
+                partner2.ForceMutate();
+            }
+            partner1.fitness = 10;
+
+            baby = (NeatAgent)partner1.CrossOver(partner2);
+            currentAgent = partner1;
+        }
+
         private void OnKeyPress(object sender, KeyReleaseEventArgs args)
         {
             switch (args.Event.Key)
@@ -44,37 +63,25 @@ namespace MlEco
                 case Gdk.Key.Escape: 
                     Application.Quit();
                     break;
-                case Gdk.Key.Key_0:
-                    agent.ForceMutate();
-                    drawingArea.QueueDraw();
-                    break;
                 case Gdk.Key.Key_1:
-                    agent.ForceMutate(1);
+                    currentAgent = partner1;
                     drawingArea.QueueDraw();
                     break;
                 case Gdk.Key.Key_2:
-                    agent.ForceMutate(2);
+                    currentAgent = partner2;
                     drawingArea.QueueDraw();
                     break;
                 case Gdk.Key.Key_3:
-                    agent.ForceMutate(3);
-                    drawingArea.QueueDraw();
-                    break;
-                case Gdk.Key.Key_4:
-                    agent.ForceMutate(4);
-                    drawingArea.QueueDraw();
-                    break;
-                case Gdk.Key.Key_5:
-                    agent.ForceMutate(5);
+                    currentAgent = baby;
                     drawingArea.QueueDraw();
                     break;
                 case Gdk.Key.R:
                 case Gdk.Key.r:
-                    agent = new NeatAgent();
+                    SetAgents();
                     drawingArea.QueueDraw();
                     break;
                 case Gdk.Key.space:
-                    agent.ActivateWithRandomInputs();
+                    currentAgent.ActivateWithRandomInputs();
                     drawingArea.QueueDraw();
                     break;
                 default:
@@ -85,40 +92,40 @@ namespace MlEco
 
         protected virtual void OnExpose(object sender, ExposeEventArgs args)
         {
-            for (int i=0; i < agent.Connections.Count; i++)
+            for (int i=0; i < currentAgent.Connections.Count; i++)
             {
-                if (!agent.Connections[i].Expressed) { continue; }
-                Cairo.Color color = new Cairo.Color(agent.Connections[i].DrawColor[0],
-                                                    agent.Connections[i].DrawColor[1],
-                                                    agent.Connections[i].DrawColor[2]);
+                if (!currentAgent.Connections[i].Expressed) { continue; }
+                Cairo.Color color = new Cairo.Color(currentAgent.Connections[i].DrawColor[0],
+                                                    currentAgent.Connections[i].DrawColor[1],
+                                                    currentAgent.Connections[i].DrawColor[2]);
                 DrawLine(
                     drawingArea,
                     Allocation.Width,
                     Allocation.Height,
-                    Math.Abs(10 * agent.Connections[i].Weight),
+                    Math.Abs(10 * currentAgent.Connections[i].Weight),
                     color,
-                    agent.Connections[i].InNode.DrawPosition,
-                    agent.Connections[i].OutNode.DrawPosition);
+                    currentAgent.Connections[i].InNode.DrawPosition,
+                    currentAgent.Connections[i].OutNode.DrawPosition);
             }
 
-            for (int i = 0; i < agent.Nodes.Count; i++)
+            for (int i = 0; i < currentAgent.Nodes.Count; i++)
             {
                 DrawCircle(
                     drawingArea,
                     Allocation.Width,
                     Allocation.Height,
                     2,
-                    agent.Nodes[i].Type == NodeGene.NodeType.Hidden ? new double[] { 0, 0, 0 } : new double[] { 1, 1, 1 },
-                    agent.Nodes[i].Type == NodeGene.NodeType.Hidden ? new double[] { 1, 1, 1 } : new double[] { 0, 0, 0 },
-                    agent.Nodes[i].DrawPosition,
+                    currentAgent.Nodes[i].Type == NodeGene.NodeType.Hidden ? new double[] { 0, 0, 0 } : new double[] { 1, 1, 1 },
+                    currentAgent.Nodes[i].Type == NodeGene.NodeType.Hidden ? new double[] { 1, 1, 1 } : new double[] { 0, 0, 0 },
+                    currentAgent.Nodes[i].DrawPosition,
                     2);
                 DrawCaption(
                     drawingArea,
                     Allocation.Width,
                     Allocation.Height,
-                    String.Format("{0:.##}", agent.Nodes[i].value),
-                    agent.Nodes[i].DrawPosition.x - 0.035,
-                    agent.Nodes[i].DrawPosition.y + 0.02,
+                    String.Format("{0:.##}", currentAgent.Nodes[i].value),
+                    currentAgent.Nodes[i].DrawPosition.x - 0.035,
+                    currentAgent.Nodes[i].DrawPosition.y + 0.02,
                     3);
 
             }

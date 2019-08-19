@@ -6,7 +6,7 @@ namespace MlEco
 {
     public static partial class mlZoo
     {
-
+        //Here debuf crossover, seems like only fittestAgent getting through
         [Serializable]
         public class NeatAgent : Agent
         {
@@ -95,13 +95,135 @@ namespace MlEco
             {
                 NeatAgent baby = new NeatAgent();
                 NeatAgent partner = (NeatAgent)_partner;
+                NeatAgent fittestAgent;
+                NeatAgent lessFitAgent;
 
-                this.Connections.Sort();
-                partner.Connections.Sort();
+                if (this.fitness > partner.fitness)
+                {
+                    fittestAgent = this;
+                    lessFitAgent = partner;
+                }
+                else
+                {
+                    fittestAgent = partner;
+                    lessFitAgent = this;
+                }
 
-                //HERE
+                fittestAgent.Connections.Sort();
+                lessFitAgent.Connections.Sort();
+
+                int maxInnovationNum;
+
+                if (fittestAgent.Connections.Count == 0 && lessFitAgent.Connections.Count == 0)
+                {
+                    return new NeatAgent();
+                }
+
+                else if (fittestAgent.Connections.Count == 0 && lessFitAgent.Connections.Count != 0)
+                {
+                    maxInnovationNum = lessFitAgent.Connections[Connections.Count - 1].InnovationNumber;
+                }
+
+                else if (fittestAgent.Connections.Count != 0 && lessFitAgent.Connections.Count == 0)
+                {
+                    maxInnovationNum = fittestAgent.Connections[Connections.Count - 1].InnovationNumber;
+                }
+
+                else
+                {
+                    maxInnovationNum = Math.Max(fittestAgent.Connections[fittestAgent.Connections.Count - 1].InnovationNumber,
+                                                lessFitAgent.Connections[lessFitAgent.Connections.Count - 1].InnovationNumber);
+                }
+
+                int innovationIndex = 0;
+                do
+                {
+                    while (!(fittestAgent.LocalInnovationSet.Contains(innovationIndex)) &&
+                           !(lessFitAgent.LocalInnovationSet.Contains(innovationIndex)))
+                    {
+                        innovationIndex++;
+                        continue;
+                    }
+
+                    if (fittestAgent.LocalInnovationSet.Contains(innovationIndex) &&
+                        !(lessFitAgent.LocalInnovationSet.Contains(innovationIndex)))
+                    {
+                        baby.AddConnection(fittestAgent.GetConnectionByIN(innovationIndex));
+                    }
+                    else if (fittestAgent.LocalInnovationSet.Contains(innovationIndex) &&
+                            lessFitAgent.LocalInnovationSet.Contains(innovationIndex))
+                    {
+                        if (fittestAgent.fitness/(fittestAgent.fitness + lessFitAgent.fitness) < RandomDouble())
+                        {
+                            baby.AddConnection(fittestAgent.GetConnectionByIN(innovationIndex));
+                        }
+                        else
+                        {
+                            baby.AddConnection(lessFitAgent.GetConnectionByIN(innovationIndex));
+                        }
+                    }
+                    //disjoint or excess lessFitAgent gene, ignore
+                    else
+                    {
+                        innovationIndex++;
+                        continue;
+                    }
+
+                    baby.AddNodesFromConnectionIN(innovationIndex);
+
+                    innovationIndex++;
+                }
+                while (innovationIndex < maxInnovationNum);
 
                 return baby;
+            }
+
+            private void AddNodesFromConnectionIN(int innovationIndex)
+            {
+                ConnectionGene connection = GetConnectionByIN(innovationIndex);
+                bool foundIn = false;
+                bool foundOut = false;
+
+                if (connection.InNode.Type == NodeGene.NodeType.Sensor) { foundIn = true; }
+                if (connection.OutNode.Type == NodeGene.NodeType.Output) { foundOut = true; }
+
+                for (int i=0; i < Nodes.Count; i++)
+                {
+                    if (Nodes[i].Index == connection.InNode.Index)
+                    {
+                        foundIn = true;
+                    }
+                    if (Nodes[i].Index == connection.OutNode.Index)
+                    {
+                        foundOut = true;
+                    }
+
+                    if (!foundIn)
+                    {
+                        Nodes.Add(new NodeGene(connection.InNode.Type,
+                            connection.InNode.Index,
+                            connection.InNode.DrawPosition));
+                    }
+
+                    if (!foundOut)
+                    {
+                        Nodes.Add(new NodeGene(connection.OutNode.Type,
+                            connection.OutNode.Index,
+                            connection.OutNode.DrawPosition));
+                    }
+                }
+            }
+
+            private ConnectionGene GetConnectionByIN(int innovationIndex)
+            {
+                for (int i=0; i < Connections.Count; i++)
+                {
+                    if( Connections[i].InnovationNumber == innovationIndex)
+                    {
+                        return Connections[i];
+                    }
+                }
+                throw new KeyNotFoundException("GetConnectionByIN recived unavailable IN");
             }
 
             private static int GetInnovationNumber((NodeGene, NodeGene) nodes)
@@ -203,8 +325,11 @@ namespace MlEco
             {
                 if (Connections.Count == 0) { return; }
                 ConnectionGene connection;
+                int attempts = 0;
                 do
                 {
+                    attempts++;
+                    if (attempts > 100) { return; }
                     connection = Connections[RandomInt(Connections.Count)];
                 }
                 while (connection.Expressed == false);
@@ -220,8 +345,8 @@ namespace MlEco
                 newConnection1.Weight = 1;
                 newConnection2.Weight = connection.Weight;
 
-                Connections.Add(newConnection1);
-                Connections.Add(newConnection2);
+                AddConnection(newConnection1);
+                AddConnection(newConnection2);
                 Nodes.Add(newNode);
             }
 
