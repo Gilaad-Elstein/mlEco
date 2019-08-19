@@ -71,7 +71,15 @@ namespace MlEco
 
             }
 
-            internal override double[] GetOutputs() { return new double[] { 0, 0, 0, 0, 0 }; }
+            internal override double[] GetOutputs() 
+            {
+                double[] outputs = new double[NUM_OUTPUTS];
+                for (int i=0; i < NUM_OUTPUTS; i++)
+                {
+                    outputs[i] = Nodes[i + NUM_INPUTS].value;
+                }
+                return outputs;
+            }
 
             internal double[] ActivateWithRandomInputs()
             {
@@ -83,7 +91,18 @@ namespace MlEco
                 return Activate(inputs);
             }
 
-            internal override Agent CrossOver(Agent _partner) { return new NeatAgent(); }
+            internal override Agent CrossOver(Agent _partner)
+            {
+                NeatAgent baby = new NeatAgent();
+                NeatAgent partner = (NeatAgent)_partner;
+
+                this.Connections.Sort();
+                partner.Connections.Sort();
+
+                //HERE
+
+                return baby;
+            }
 
             private static int GetInnovationNumber((NodeGene, NodeGene) nodes)
             {
@@ -206,7 +225,7 @@ namespace MlEco
                 Nodes.Add(newNode);
             }
 
-            internal class ConnectionGene
+            internal class ConnectionGene : IComparable
             {
                 internal NodeGene InNode;
                 internal NodeGene OutNode;
@@ -237,6 +256,15 @@ namespace MlEco
                 internal void MutateExpressed()
                 {
                     Expressed = !Expressed;
+                }
+
+                public int CompareTo(object obj)
+                {
+                    if (!(obj is ConnectionGene))
+                    {
+                        throw new InvalidOperationException("Compared ConnectionGene to something that isn't.");
+                    }
+                    return this.InnovationNumber.CompareTo(((ConnectionGene)obj).InnovationNumber);
                 }
             }
 

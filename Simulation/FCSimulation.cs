@@ -78,8 +78,8 @@ namespace MlEco
                         baby.lastMatedAtTick = ticksElapsed;
                         PartnerA.lastMatedAtTick = ticksElapsed;
                         PartnerB.lastMatedAtTick = ticksElapsed;
-                        PartnerA.fitness += 10;
-                        PartnerB.fitness += 10;
+                        PartnerA.agent.fitness += 10;
+                        PartnerB.agent.fitness += 10;
                     }
                 }
             }
@@ -88,13 +88,13 @@ namespace MlEco
             if (Creatures.Count > MAX_CREATURES)
             {
                 Creatures.Sort();
-                double maxKeepScore = Creatures[Creatures.Count - 1].fitness *
+                double maxKeepScore = Creatures[Creatures.Count - 1].agent.fitness *
                                           CREATURE_MAX_LIFESPAN;
                 while (Creatures.Count > MAX_CREATURES)
                 {
                     int i = RandomInt(Creatures.Count);
 
-                    if (Creatures[i].fitness *
+                    if (Creatures[i].agent.fitness *
                     (CREATURE_MAX_LIFESPAN - Creatures[i].lifeTime) /
                         maxKeepScore < RandomDouble())
                     {

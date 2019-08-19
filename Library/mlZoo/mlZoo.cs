@@ -11,13 +11,22 @@ namespace MlEco
     public static partial class mlZoo
     {
         [Serializable]
-        public abstract class Agent
+        public abstract class Agent : IComparable
         {
             internal static readonly double MutationRate = 0.01;
+            internal double fitness = 0;
 
             internal abstract double[] Activate(double[] inputs);
             internal abstract double[] GetOutputs();
             internal abstract Agent CrossOver(Agent _partner);
+
+            public int CompareTo(object otherAgent)
+            {
+                if (!(otherAgent is Agent))
+                    throw new InvalidOperationException();
+                Agent castOtherAgent = (Agent)otherAgent;
+                return this.fitness.CompareTo(castOtherAgent.fitness);
+            }
         }
     }
 }

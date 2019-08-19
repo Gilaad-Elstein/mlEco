@@ -16,7 +16,6 @@ namespace MlEco
         public double energy = INIT_CREATURE_ENERGY;
         public bool isAlive = true;
         public int lifeTime = 0;
-        public int fitness = 0;
         public List<ICollidable> SensoryGroup { get; internal set; }
         public int lastMatedAtTick = 0;
         public bool readyToMate = false;
@@ -191,7 +190,7 @@ namespace MlEco
             if (obstruction is Food food)
             {
                 energy += food.energy;
-                fitness += 10;
+                agent.fitness += 10;
             }
         }
 
@@ -200,7 +199,7 @@ namespace MlEco
             if (!(otherCreature is Creature))
                 throw new InvalidOperationException();
             Creature castOtherCreature = (Creature)otherCreature;
-            return this.fitness.CompareTo(castOtherCreature.fitness);
+            return this.agent.fitness.CompareTo(castOtherCreature.agent.fitness);
         }
 
     }

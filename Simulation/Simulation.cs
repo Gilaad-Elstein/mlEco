@@ -118,7 +118,7 @@ namespace MlEco
             double sum = 0;
             for (int i=0; i < Creatures.Count; i++)
             {
-                sum += Creatures[i].fitness;
+                sum += Creatures[i].agent.fitness;
             }
             return sum / Creatures.Count;
         }
