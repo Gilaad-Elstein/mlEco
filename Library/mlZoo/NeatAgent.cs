@@ -6,7 +6,6 @@ namespace MlEco
 {
     public static partial class mlZoo
     {
-        //Here debuf crossover, seems like only fittestAgent getting through
         [Serializable]
         public class NeatAgent : Agent
         {
@@ -93,7 +92,7 @@ namespace MlEco
 
             internal override Agent CrossOver(Agent _partner)
             {
-                NeatAgent baby = new NeatAgent();
+                NeatAgent offspring = new NeatAgent();
                 NeatAgent partner = (NeatAgent)_partner;
                 NeatAgent fittestAgent;
                 NeatAgent lessFitAgent;
@@ -148,18 +147,18 @@ namespace MlEco
                     if (fittestAgent.LocalInnovationSet.Contains(innovationIndex) &&
                         !(lessFitAgent.LocalInnovationSet.Contains(innovationIndex)))
                     {
-                        baby.AddConnection(fittestAgent.GetConnectionByIN(innovationIndex));
+                        offspring.AddConnection(fittestAgent.GetConnectionByIN(innovationIndex));
                     }
                     else if (fittestAgent.LocalInnovationSet.Contains(innovationIndex) &&
                             lessFitAgent.LocalInnovationSet.Contains(innovationIndex))
                     {
                         if (fittestAgent.fitness/(fittestAgent.fitness + lessFitAgent.fitness) < RandomDouble())
                         {
-                            baby.AddConnection(fittestAgent.GetConnectionByIN(innovationIndex));
+                            offspring.AddConnection(fittestAgent.GetConnectionByIN(innovationIndex));
                         }
                         else
                         {
-                            baby.AddConnection(lessFitAgent.GetConnectionByIN(innovationIndex));
+                            offspring.AddConnection(lessFitAgent.GetConnectionByIN(innovationIndex));
                         }
                     }
                     //disjoint or excess lessFitAgent gene, ignore
@@ -169,13 +168,13 @@ namespace MlEco
                         continue;
                     }
 
-                    baby.AddNodesFromConnectionIN(innovationIndex);
+                    offspring.AddNodesFromConnectionIN(innovationIndex);
 
                     innovationIndex++;
                 }
                 while (innovationIndex < maxInnovationNum);
 
-                return baby;
+                return offspring;
             }
 
             private void AddNodesFromConnectionIN(int innovationIndex)

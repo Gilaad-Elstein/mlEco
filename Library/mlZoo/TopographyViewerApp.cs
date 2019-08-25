@@ -13,7 +13,7 @@ namespace MlEco
         private DrawingArea drawingArea;
         private NeatAgent partner1;
         private NeatAgent partner2;
-        private NeatAgent baby;
+        private NeatAgent offspring;
         private NeatAgent currentAgent;
 
         public TopographyViewerApp() : base("TopographyViewer")
@@ -52,7 +52,7 @@ namespace MlEco
             }
             partner1.fitness = 10;
 
-            baby = (NeatAgent)partner1.CrossOver(partner2);
+            offspring = (NeatAgent)partner1.CrossOver(partner2);
             currentAgent = partner1;
         }
 
@@ -72,7 +72,7 @@ namespace MlEco
                     drawingArea.QueueDraw();
                     break;
                 case Gdk.Key.Key_3:
-                    currentAgent = baby;
+                    currentAgent = offspring;
                     drawingArea.QueueDraw();
                     break;
                 case Gdk.Key.R:

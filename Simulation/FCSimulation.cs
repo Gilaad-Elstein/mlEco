@@ -24,11 +24,11 @@ namespace MlEco
                     {
                         PartnerB = Creatures[RandomInt(10)];
                     }
-                    Creature baby = new Creature(PartnerA.agent.CrossOver(PartnerB.agent), new Position(RandomDouble(), RandomDouble()))
+                    Creature offspring = new Creature(PartnerA.agent.CrossOver(PartnerB.agent), new Position(RandomDouble(), RandomDouble()))
                     {
                         lastMatedAtTick = ticksElapsed
                     };
-                    Creatures.Add(baby);
+                    Creatures.Add(offspring);
                 }
             }
         }
@@ -53,7 +53,7 @@ namespace MlEco
         {
             List<Creature> matingCreatures = new List<Creature>();
             List<Creature> matedCreatures = new List<Creature>();
-            List<Creature> offspring = new List<Creature>();
+            List<Creature> offspringPool = new List<Creature>();
 
             foreach (Creature creature in Creatures)
             {
@@ -71,11 +71,11 @@ namespace MlEco
                     if (!matedCreatures.Contains(PartnerA) &&
                         !matedCreatures.Contains(PartnerB))
                     {
-                        Creature baby = new Creature(PartnerA.agent.CrossOver(PartnerB.agent), new Position(RandomDouble(), RandomDouble()));
-                        offspring.Add(baby);
+                        Creature offspring = new Creature(PartnerA.agent.CrossOver(PartnerB.agent), new Position(RandomDouble(), RandomDouble()));
+                        offspringPool.Add(offspring);
                         matedCreatures.Add(PartnerA);
                         matedCreatures.Add(PartnerB);
-                        baby.lastMatedAtTick = ticksElapsed;
+                        offspring.lastMatedAtTick = ticksElapsed;
                         PartnerA.lastMatedAtTick = ticksElapsed;
                         PartnerB.lastMatedAtTick = ticksElapsed;
                         PartnerA.agent.fitness += 10;
@@ -83,7 +83,7 @@ namespace MlEco
                     }
                 }
             }
-            Creatures.AddRange(offspring);
+            Creatures.AddRange(offspringPool);
 
             if (Creatures.Count > MAX_CREATURES)
             {
