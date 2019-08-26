@@ -89,16 +89,20 @@
     <Compile Include="App\DrawObjects.cs" />
     <Compile Include="Library\mlZoo\mlZoo.cs" />
     <Compile Include="Library\mlZoo\FCAgent.cs" />
-    <Compile Include="Library\mlZoo\NeatAgent.cs" />
     <Compile Include="Simulation\NEATSimulation.cs" />
     <Compile Include="Simulation\FCSimulation.cs" />
     <Compile Include="Library\mlZoo\TopographyViewerApp.cs" />
+    <Compile Include="Library\mlZoo\Neat\NeatAgent.cs" />
+    <Compile Include="Library\mlZoo\Neat\ConnectionGene.cs" />
+    <Compile Include="Library\mlZoo\Neat\NodeGene.cs" />
+    <Compile Include="Library\mlZoo\Neat\NeatReproduction.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Simulation\" />
     <Folder Include="App\" />
     <Folder Include="Library\" />
     <Folder Include="Library\mlZoo\" />
+    <Folder Include="Library\mlZoo\Neat\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

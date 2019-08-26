@@ -1,10 +1,11 @@
 ﻿using System;
 using Gtk;
 using static MlEco.mlZoo;
-using static MlEco.mlZoo.NeatAgent;
+using static MlEco.NeatAgent;
 using static MlEco.Library;
 using static MlEco.Literals;
-
+using System.Collections.Generic;
+using mlEco.Library.mlZoo.Neat;
 
 namespace MlEco
 {
@@ -18,7 +19,6 @@ namespace MlEco
 
         public TopographyViewerApp() : base("TopographyViewer")
         {
-            SetAgents();
 
             SetSizeRequest(720, 450);
             SetPosition(WindowPosition.Center);
@@ -36,11 +36,74 @@ namespace MlEco
             drawingArea.ExposeEvent += OnExpose;
 
             Add(drawingArea);
+            currentAgent = new NeatAgent();
 
             ShowAll();
+
+            XorAgents();
+
         }
 
-        private void SetAgents()
+        private void XorAgents()
+        {
+            List<NeatAgent> population = new List<NeatAgent>();
+            List<NeatAgent> nextPopulation = new List<NeatAgent>();
+
+            int popSize = 300;
+            int gens = 10;
+            for (int i = 0; i < popSize; i++)
+            {
+                population.Add(new NeatAgent());
+            }
+            for (int j = 0; j < gens; j++)
+            {
+                for (int i = 0; i < population.Count; i++)
+                {
+                    currentAgent = population[i];
+                    drawingArea.QueueDraw();
+                    double error = 0;
+                    error += -1 - population[i].Activate(new double[] { -1, -1 })[0];
+                    error += -1 + population[i].Activate(new double[] { 1, -1 })[0];
+                    error += -1 + population[i].Activate(new double[] { -1, 1 })[0];
+                    error += -1 - population[i].Activate(new double[] { -1, -1 })[0];
+                    population[i].fitness = error;
+                }
+
+                population.Sort();
+                population.Reverse();
+                nextPopulation.Clear();
+
+                for (int i = 0; i < popSize; i++)
+                {
+                    int mate1 = RandomInt(popSize);
+                    int mate2 = RandomInt(popSize);
+                    while (mate1 == mate2)
+                    {
+                        mate2 = RandomInt(popSize);
+                    }
+                    nextPopulation.Add((NeatAgent)population[mate1].CrossOver(population[mate2]));
+                }
+
+                population.Clear();
+                for (int i = 0; i < nextPopulation.Count; i++) { population.Add(nextPopulation[i]); }
+                Here((String.Format("pop {0}", j)));
+            }
+
+            population.Sort();
+            population.Reverse();
+
+            Console.WriteLine(population[0].Activate(new double[] { -1, -1 })[0]);
+            Console.WriteLine(population[0].Activate(new double[] { 1, -1 })[0]);
+            Console.WriteLine(population[0].Activate(new double[] { -1, 1 })[0]);
+            Console.WriteLine(population[0].Activate(new double[] { 1, 1 })[0]);
+
+            partner1 = population[0];
+            partner2 = population[1];
+            offspring = population[2];
+            currentAgent = partner1;
+        }
+
+        private void DebugSingleCrossover()
         {
             partner1 = new NeatAgent();
             partner2 = new NeatAgent();
@@ -51,6 +114,7 @@ namespace MlEco
                 partner2.ForceMutate();
             }
             partner1.fitness = 10;
+            partner2.fitness = 11;
 
             offspring = (NeatAgent)partner1.CrossOver(partner2);
             currentAgent = partner1;
@@ -77,7 +141,7 @@ namespace MlEco
                     break;
                 case Gdk.Key.R:
                 case Gdk.Key.r:
-                    SetAgents();
+                    DebugSingleCrossover();
                     drawingArea.QueueDraw();
                     break;
                 case Gdk.Key.space:
