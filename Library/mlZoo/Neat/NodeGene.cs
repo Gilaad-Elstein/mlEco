@@ -4,7 +4,7 @@ using static MlEco.NeatAgent;
 
 namespace mlEco.Library.mlZoo.Neat
 {
-    internal class NodeGene
+    public class NodeGene
     {
         internal readonly int Index;
         internal NodeType Type;
@@ -20,7 +20,7 @@ namespace mlEco.Library.mlZoo.Neat
 
             this.Type = type;
             this.Index = index;
-            if (Type == NodeType.Sensor)
+            if (Type == NodeType.Input)
             {
                 DrawPosition = new Position(0.1, (double)(index + 0.5) / NUM_INPUTS);
             }
@@ -47,6 +47,6 @@ namespace mlEco.Library.mlZoo.Neat
             DrawPosition = position;
         }
 
-        internal enum NodeType { Sensor, Output, Hidden }
+        internal enum NodeType { Input, Output, Hidden }
     }
 }

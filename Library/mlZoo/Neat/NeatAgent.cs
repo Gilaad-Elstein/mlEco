@@ -15,6 +15,7 @@ namespace MlEco
 
         internal static int GetInnovationNumber((NodeGene, NodeGene) nodes)
         {
+            if (!ValidatNodePair(nodes)) { throw new ArgumentException("bad node pair" + nodes.ToString()); };
             int innovationIndex = GlobalInnovationSet.IndexOf(nodes);
             if (innovationIndex >= 0)
             {
@@ -27,6 +28,29 @@ namespace MlEco
             }
         }
 
+        public static bool ValidatNodePair((NodeGene, NodeGene) nodes)
+        {
+            int index1 = nodes.Item1.Index;
+            int index2 = nodes.Item2.Index;
+            NodeGene.NodeType type1 = nodes.Item1.Type;
+            NodeGene.NodeType type2 = nodes.Item2.Type;
+
+            if ( type2 == NodeGene.NodeType.Input ||
+                 type1 == NodeGene.NodeType.Output)
+            {
+                return false;
+            }
+
+            if ( type1 == NodeGene.NodeType.Hidden &&
+                 type2 == NodeGene.NodeType.Hidden &&
+                 index1 >= index2)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         internal List<ConnectionGene> Connections = new List<ConnectionGene>();
         internal List<NodeGene> Nodes = new List<NodeGene>();
         private List<int> LocalInnovationSet = new List<int>();
@@ -35,7 +59,7 @@ namespace MlEco
         {
             for (int i = 0; i < NUM_INPUTS; i++)
             {
-                Nodes.Add(new NodeGene(NodeGene.NodeType.Sensor, Nodes.Count));
+                Nodes.Add(new NodeGene(NodeGene.NodeType.Input, Nodes.Count));
             }
             for (int i = 0; i < NUM_OUTPUTS; i++)
             {
@@ -62,7 +86,7 @@ namespace MlEco
 
         internal double ActivateNode(int nodeIndex)
         {
-            if (Nodes[nodeIndex].Type == NodeGene.NodeType.Sensor)
+            if (Nodes[nodeIndex].Type == NodeGene.NodeType.Input)
             {
                 return Nodes[nodeIndex].value;
             }

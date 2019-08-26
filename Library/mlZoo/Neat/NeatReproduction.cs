@@ -114,7 +114,7 @@ namespace MlEco
             bool foundIn = false;
             bool foundOut = false;
 
-            if (connection.InNode.Type == NodeGene.NodeType.Sensor) { foundIn = true; }
+            if (connection.InNode.Type == NodeGene.NodeType.Input) { foundIn = true; }
             if (connection.OutNode.Type == NodeGene.NodeType.Output) { foundOut = true; }
 
             for (int i = 0; i < Nodes.Count; i++)
@@ -205,15 +205,11 @@ namespace MlEco
                 while ((nodeInIndex > nodeOutIndex && Nodes[nodeOutIndex].Type != NodeGene.NodeType.Output) ||
                        nodeInIndex == nodeOutIndex ||
                        Nodes[nodeInIndex].Type == NodeGene.NodeType.Output ||
-                       Nodes[nodeOutIndex].Type == NodeGene.NodeType.Sensor);
+                       Nodes[nodeOutIndex].Type == NodeGene.NodeType.Input);
 
             } while (LocalInnovationSet.Contains(GetInnovationNumber((Nodes[nodeInIndex], Nodes[nodeOutIndex]))));
             ConnectionGene newConnection = new ConnectionGene(Nodes[nodeInIndex], Nodes[nodeOutIndex]);
-            if (newConnection.InNode.Index == newConnection.OutNode.Index ||
-                newConnection.InNode.Index > newConnection.OutNode.Index && !(Nodes[nodeOutIndex].Type == NodeGene.NodeType.Output))
-            {
-                throw new Exception("inside connection");
-            }
+
             AddConnection(newConnection);
         }
 
