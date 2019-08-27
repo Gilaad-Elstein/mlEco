@@ -1,5 +1,6 @@
 ﻿using mlEco.Library.mlZoo.Neat;
 using static MlEco.NeatAgent;
+using static MlEco.Library;
 using NUnit.Framework;
 using System;
 using MlEco;
@@ -9,10 +10,6 @@ namespace mlEco.Tests
     [TestFixture()]
     public class TestNeatAgent
     {
-        [Test()]
-        public void TestCase()
-        {
-        }
 
         [Test()]
         public void TestValidateNodePair()
@@ -78,6 +75,63 @@ namespace mlEco.Tests
                     }
                 }
             }
+
+        }
+
+        [Test()]
+        public void TestGetInnovationNumber()
+        {
+            NodeGene[] genes = new NodeGene[]
+            {
+                new NodeGene(NodeGene.NodeType.Input, 0),
+                new NodeGene(NodeGene.NodeType.Input, 1),
+                new NodeGene(NodeGene.NodeType.Output, 2),
+                new NodeGene(NodeGene.NodeType.Output, 3),
+                new NodeGene(NodeGene.NodeType.Hidden, 4, new Position(0,0)),
+                new NodeGene(NodeGene.NodeType.Hidden, 4, new Position(1,1))
+            };
+
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[0], genes[0])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[0], genes[1])));
+            Assert.That(GetInnovationNumber((genes[0], genes[2])), Is.EqualTo(0));
+            Assert.That(GetInnovationNumber((genes[0], genes[3])), Is.EqualTo(1));
+            Assert.That(GetInnovationNumber((genes[0], genes[4])), Is.EqualTo(2));
+            Assert.That(GetInnovationNumber((genes[0], genes[5])), Is.EqualTo(2));
+
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[1], genes[0])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[1], genes[1])));
+            Assert.That(GetInnovationNumber((genes[1], genes[2])), Is.EqualTo(3));
+            Assert.That(GetInnovationNumber((genes[1], genes[3])), Is.EqualTo(4));
+            Assert.That(GetInnovationNumber((genes[1], genes[4])), Is.EqualTo(5));
+            Assert.That(GetInnovationNumber((genes[1], genes[5])), Is.EqualTo(5));
+
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[2], genes[0])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[2], genes[1])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[2], genes[2])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[2], genes[3])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[2], genes[4])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[2], genes[5])));
+
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[3], genes[0])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[3], genes[1])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[3], genes[2])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[3], genes[3])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[3], genes[4])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[3], genes[5])));
+
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[4], genes[0])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[4], genes[1])));
+            Assert.That(GetInnovationNumber((genes[4], genes[2])), Is.EqualTo(6));
+            Assert.That(GetInnovationNumber((genes[4], genes[3])), Is.EqualTo(7));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[4], genes[4])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[4], genes[5])));
+
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[5], genes[0])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[5], genes[1])));
+            Assert.That(GetInnovationNumber((genes[5], genes[2])), Is.EqualTo(6));
+            Assert.That(GetInnovationNumber((genes[5], genes[3])), Is.EqualTo(7));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[5], genes[4])));
+            Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[5], genes[5])));
 
         }
     }

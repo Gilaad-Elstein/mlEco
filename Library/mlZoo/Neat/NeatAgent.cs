@@ -11,19 +11,19 @@ namespace MlEco
     {
         public static readonly int NUM_INPUTS = 2;
         public static readonly int NUM_OUTPUTS = 1;
-        private static List<(NodeGene, NodeGene)> GlobalInnovationSet = new List<(NodeGene, NodeGene)>();
+        private static List<(int, int)> GlobalInnovationSet = new List<(int, int)>();
 
         internal static int GetInnovationNumber((NodeGene, NodeGene) nodes)
         {
-            if (!ValidatNodePair(nodes)) { throw new ArgumentException("bad node pair" + nodes.ToString()); };
-            int innovationIndex = GlobalInnovationSet.IndexOf(nodes);
+            if (!ValidatNodePair(nodes)) { throw new ArgumentException("bad node pair"); }
+            int innovationIndex = GlobalInnovationSet.IndexOf((nodes.Item1.Index, nodes.Item2.Index));
             if (innovationIndex >= 0)
             {
                 return innovationIndex;
             }
             else
             {
-                GlobalInnovationSet.Add(nodes);
+                GlobalInnovationSet.Add((nodes.Item1.Index, nodes.Item2.Index));
                 return GlobalInnovationSet.Count - 1;
             }
         }
