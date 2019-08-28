@@ -14,6 +14,11 @@ namespace mlEco.Tests
         [Test()]
         public void TestValidateNodePair()
         {
+            NeatAgent.ClearGlobalInnovationSet();
+
+            NUM_INPUTS = 7;
+            NUM_OUTPUTS = 5;
+
             int testDepth = 100;
 
             for (int i=0; i < testDepth; i++)
@@ -26,12 +31,13 @@ namespace mlEco.Tests
                     NodeGene.NodeType type2;
                     int index1 = i;
                     int index2 = j;
+
                     if ( index1 < NUM_INPUTS)
                     {
                         type1 = NodeGene.NodeType.Input;
                         node1 = new NodeGene(type1, index1);
                     }
-                    else if (index1 < NUM_OUTPUTS)
+                    else if (index1 < NUM_OUTPUTS + NUM_INPUTS)
                     {
                         type1 = NodeGene.NodeType.Output;
                         node1 = new NodeGene(type1, index1);
@@ -46,7 +52,7 @@ namespace mlEco.Tests
                         type2 = NodeGene.NodeType.Input;
                         node2 = new NodeGene(type2, index2);
                     }
-                    else if (index2 < NUM_OUTPUTS)
+                    else if (index2 < NUM_OUTPUTS + NUM_INPUTS)
                     {
                         type2 = NodeGene.NodeType.Output;
                         node2 = new NodeGene(type2, index2);
@@ -81,6 +87,9 @@ namespace mlEco.Tests
         [Test()]
         public void TestGetInnovationNumber()
         {
+            NeatAgent.ClearGlobalInnovationSet();
+            NUM_INPUTS = 2;
+            NUM_OUTPUTS = 2;
             NodeGene[] genes = new NodeGene[]
             {
                 new NodeGene(NodeGene.NodeType.Input, 0),
@@ -132,7 +141,41 @@ namespace mlEco.Tests
             Assert.That(GetInnovationNumber((genes[5], genes[3])), Is.EqualTo(7));
             Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[5], genes[4])));
             Assert.Throws<ArgumentException>(() => GetInnovationNumber((genes[5], genes[5])));
-
         }
+
+        [Test()]
+        public void TestActivate()
+        {
+            ClearGlobalInnovationSet();
+            NUM_INPUTS = 5;
+            NUM_OUTPUTS = 5;
+            int numHidden = 5;
+            double weight = 1;
+            double[] inputs = new double[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+            NeatAgent agent = new NeatAgent(NUM_INPUTS, NUM_OUTPUTS);
+
+            for (int i=0; i < numHidden; i++)
+            {
+                agent.Nodes.Add(new NodeGene(NodeGene.NodeType.Hidden, agent.Nodes.Count, new Position(0, 0)));
+            }
+
+            for (int i=0; i < agent.Nodes.Count; i++)
+            {
+                for (int j=0; j < agent.Nodes.Count; j++)
+                {
+                    if (NeatAgent.ValidatNodePair((agent.Nodes[i], agent.Nodes[j])))
+                    {
+                        agent.Connections.Add(new ConnectionGene(agent.Nodes[i], agent.Nodes[j], weight));
+                    }
+                }
+            }
+
+            agent.Activate(inputs);
+            foreach(double output in agent.GetOutputs())
+            {
+                Assert.AreEqual(0.999907259884854, output, 1e-15);
+            }
+        }
+
     }
 }

@@ -20,6 +20,11 @@ namespace MlEco
             internal abstract double[] GetOutputs();
             internal abstract Agent CrossOver(Agent _partner);
 
+            public static double Sigmoid(double value)
+            {
+                return (1.0 / (1.0 + Math.Exp(-value)) * 2 - 1);
+            }
+
             public int CompareTo(object otherAgent)
             {
                 if (!(otherAgent is Agent))

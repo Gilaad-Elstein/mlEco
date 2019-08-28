@@ -16,87 +16,57 @@ namespace MlEco
             NeatAgent fittestAgent;
             NeatAgent lessFitAgent;
 
-            if (this.fitness > partner.fitness)
-            {
-                fittestAgent = this;
-                lessFitAgent = partner;
-            }
-            else
-            {
-                fittestAgent = partner;
-                lessFitAgent = this;
-            }
+            fittestAgent = this.fitness > partner.fitness ? this : partner;
+            lessFitAgent = this.fitness >= partner.fitness ? partner : this;
 
             fittestAgent.Connections.Sort();
             lessFitAgent.Connections.Sort();
 
-            int maxInnovationNum;
-
-            if (fittestAgent.Connections.Count == 0 && lessFitAgent.Connections.Count == 0)
+            int maxInnovationNum = Math.Max(fittestAgent.GetMaxInnovationNum(), lessFitAgent.GetMaxInnovationNum());
+            if (maxInnovationNum != -1)
             {
-                offspring = fittestAgent;
-                offspring.Mutate();
-                return offspring;
-            }
-
-            else if (fittestAgent.Connections.Count == 0 && lessFitAgent.Connections.Count != 0)
-            {
-                maxInnovationNum = lessFitAgent.Connections[lessFitAgent.Connections.Count - 1].InnovationNumber;
-            }
-
-            else if (fittestAgent.Connections.Count != 0 && lessFitAgent.Connections.Count == 0)
-            {
-                maxInnovationNum = fittestAgent.Connections[fittestAgent.Connections.Count - 1].InnovationNumber;
-            }
-
-            else
-            {
-                maxInnovationNum = Math.Max(fittestAgent.Connections[fittestAgent.Connections.Count - 1].InnovationNumber,
-                                            lessFitAgent.Connections[lessFitAgent.Connections.Count - 1].InnovationNumber);
-            }
-
-            int innovationIndex = 0;
-            do
-            {
-                while (!(fittestAgent.LocalInnovationSet.Contains(innovationIndex)) &&
-                       !(lessFitAgent.LocalInnovationSet.Contains(innovationIndex)))
+                int innovationIndex = 0;
+                do
                 {
-                    innovationIndex++;
-                    continue;
-                }
+                    while (!(fittestAgent.LocalInnovationSet.Contains(innovationIndex)) &&
+                           !(lessFitAgent.LocalInnovationSet.Contains(innovationIndex)))
+                    {
+                        innovationIndex++;
+                        continue;
+                    }
 
-                if (fittestAgent.LocalInnovationSet.Contains(innovationIndex) &&
-                    !(lessFitAgent.LocalInnovationSet.Contains(innovationIndex)))
-                {
-                    offspring.AddConnection(fittestAgent.GetConnectionByIN(innovationIndex));
-                }
-                else if (fittestAgent.LocalInnovationSet.Contains(innovationIndex) &&
-                        lessFitAgent.LocalInnovationSet.Contains(innovationIndex))
-                {
-                    if (fittestAgent.fitness / (fittestAgent.fitness + lessFitAgent.fitness) < RandomDouble())
+                    if (fittestAgent.LocalInnovationSet.Contains(innovationIndex) &&
+                        !(lessFitAgent.LocalInnovationSet.Contains(innovationIndex)))
                     {
                         offspring.AddConnection(fittestAgent.GetConnectionByIN(innovationIndex));
                     }
+                    else if (fittestAgent.LocalInnovationSet.Contains(innovationIndex) &&
+                            lessFitAgent.LocalInnovationSet.Contains(innovationIndex))
+                    {
+                        if (fittestAgent.fitness / (fittestAgent.fitness + lessFitAgent.fitness) < RandomDouble())
+                        {
+                            offspring.AddConnection(fittestAgent.GetConnectionByIN(innovationIndex));
+                        }
+                        else
+                        {
+                            offspring.AddConnection(lessFitAgent.GetConnectionByIN(innovationIndex));
+                        }
+                    }
+                    //disjoint or excess lessFitAgent gene, ignore
                     else
                     {
-                        offspring.AddConnection(lessFitAgent.GetConnectionByIN(innovationIndex));
+                        innovationIndex++;
+                        continue;
                     }
-                }
-                //disjoint or excess lessFitAgent gene, ignore
-                else
-                {
+
+                    offspring.AddNodesFromConnectionIN(innovationIndex);
+
                     innovationIndex++;
-                    continue;
                 }
-
-                offspring.AddNodesFromConnectionIN(innovationIndex);
-
-                innovationIndex++;
+                while (innovationIndex < maxInnovationNum);
             }
-            while (innovationIndex < maxInnovationNum);
 
             offspring.Mutate();
-
             return offspring;
         }
 
@@ -114,33 +84,27 @@ namespace MlEco
             bool foundIn = false;
             bool foundOut = false;
 
-            if (connection.InNode.Type == NodeGene.NodeType.Input) { foundIn = true; }
-            if (connection.OutNode.Type == NodeGene.NodeType.Output) { foundOut = true; }
+            foundIn |= connection.InNode.Type == NodeGene.NodeType.Input;
+            foundOut |= connection.OutNode.Type == NodeGene.NodeType.Output;
 
             for (int i = 0; i < Nodes.Count; i++)
             {
-                if (Nodes[i].Index == connection.InNode.Index)
-                {
-                    foundIn = true;
-                }
-                if (Nodes[i].Index == connection.OutNode.Index)
-                {
-                    foundOut = true;
-                }
+                foundIn |= Nodes[i].Index == connection.InNode.Index;
+                foundOut |= Nodes[i].Index == connection.OutNode.Index;
+            }
 
-                if (!foundIn)
-                {
-                    Nodes.Add(new NodeGene(connection.InNode.Type,
-                        connection.InNode.Index,
-                        connection.InNode.DrawPosition));
-                }
+            if (!foundIn)
+            {
+                Nodes.Add(new NodeGene(connection.InNode.Type,
+                    connection.InNode.Index,
+                    connection.InNode.DrawPosition));
+            }
 
-                if (!foundOut)
-                {
-                    Nodes.Add(new NodeGene(connection.OutNode.Type,
-                        connection.OutNode.Index,
-                        connection.OutNode.DrawPosition));
-                }
+            if (!foundOut)
+            {
+                Nodes.Add(new NodeGene(connection.OutNode.Type,
+                    connection.OutNode.Index,
+                    connection.OutNode.DrawPosition));
             }
         }
 
@@ -202,10 +166,7 @@ namespace MlEco
                     nodeInIndex = RandomInt(Nodes.Count);
                     nodeOutIndex = RandomInt(Nodes.Count);
                 }
-                while ((nodeInIndex > nodeOutIndex && Nodes[nodeOutIndex].Type != NodeGene.NodeType.Output) ||
-                       nodeInIndex == nodeOutIndex ||
-                       Nodes[nodeInIndex].Type == NodeGene.NodeType.Output ||
-                       Nodes[nodeOutIndex].Type == NodeGene.NodeType.Input);
+                while (!ValidatNodePair(nodeInIndex, nodeOutIndex));
 
             } while (LocalInnovationSet.Contains(GetInnovationNumber((Nodes[nodeInIndex], Nodes[nodeOutIndex]))));
             ConnectionGene newConnection = new ConnectionGene(Nodes[nodeInIndex], Nodes[nodeOutIndex]);
@@ -237,7 +198,10 @@ namespace MlEco
         private void AddConnection(ConnectionGene newConnection)
         {
             Connections.Add(newConnection);
-            LocalInnovationSet.Add(newConnection.InnovationNumber);
+            if (!LocalInnovationSet.Contains(newConnection.InnovationNumber))
+            {
+                LocalInnovationSet.Add(newConnection.InnovationNumber);
+            }
         }
 
         private void AddNodeMutation()
@@ -255,10 +219,22 @@ namespace MlEco
 
             connection.Expressed = false;
             NodeGene newNode = new NodeGene(NodeGene.NodeType.Hidden,
-                                            Nodes.Count,
+                                            GetMaxNodeIndex() + 1,
                                             new Position(
                                                 (connection.InNode.DrawPosition.x + connection.OutNode.DrawPosition.x) / 2,
                                                 (connection.InNode.DrawPosition.y + connection.OutNode.DrawPosition.y) / 2));
+
+            if(!ValidatNodePair((connection.InNode, newNode)))
+            {
+                throw new ArgumentException(string.Format(
+                                    "AddNodeMutation tried to add bad node pair {0}, {1}", connection.InNode.Index, newNode.Index));
+            }
+            if (!ValidatNodePair((newNode, connection.OutNode)))
+            {
+                throw new ArgumentException(string.Format(
+                                    "AddNodeMutation tried to add bad node pair {0}, {1}", newNode.Index, connection.OutNode.Index));
+            }
+
             ConnectionGene newConnection1 = new ConnectionGene(connection.InNode, newNode);
             ConnectionGene newConnection2 = new ConnectionGene(newNode, connection.OutNode);
             newConnection1.Weight = 1;

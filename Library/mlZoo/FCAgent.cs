@@ -152,11 +152,6 @@ namespace MlEco
                 }
 
                 public double GetValue() { return value; }
-
-                public static double Sigmoid(double value)
-                {
-                    return (1.0 / (1.0 + Math.Exp(-value)) * 2 - 1);
-                }
             }
         }
     }

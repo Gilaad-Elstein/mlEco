@@ -2,6 +2,7 @@
 using static MlEco.Library;
 using static MlEco.NeatAgent;
 using static MlEco.mlZoo.Agent;
+using System.Diagnostics;
 
 namespace mlEco.Library.mlZoo.Neat
 {
@@ -14,12 +15,19 @@ namespace mlEco.Library.mlZoo.Neat
         internal readonly int InnovationNumber;
         internal readonly double[] DrawColor;
 
-        internal ConnectionGene(NodeGene inNode, NodeGene outNode)
+        internal ConnectionGene(NodeGene inNode, NodeGene outNode, double? _weight = null)
         {
+            if (!ValidatNodePair(inNode.Index, outNode.Index)) 
+            {
+                StackTrace stackTrace = new StackTrace();
+                throw new ArgumentException(string.Format(
+                    "{0} called ConnectionGene with bad node pair {1}, {2}", stackTrace.GetFrame(1).GetMethod().Name,
+                                                                             inNode.Index, outNode.Index)); 
+            }
             this.InNode = inNode;
             this.OutNode = outNode;
-            this.Weight = RandomDouble() * 2 - 1;
-            this.InnovationNumber = GetInnovationNumber(new ValueTuple<NodeGene, NodeGene>(InNode, OutNode));
+            this.Weight = _weight is null ? RandomDouble() * 2 - 1 : (double)_weight;
+            this.InnovationNumber = GetInnovationNumber((InNode, OutNode));
             this.DrawColor = new double[] { RandomDouble(), RandomDouble(), RandomDouble() };
         }
 
