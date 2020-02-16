@@ -1,4 +1,6 @@
 /home/gilaad/Projects/mlEco/mlEco/bin/Release/mlEco.exe
-/home/gilaad/Projects/mlEco/mlEco/obj/x86/Release/mlEco.csproj.CoreCompileInputs.cache
 /home/gilaad/Projects/mlEco/mlEco/obj/x86/Release/mlEco.exe
 /home/gilaad/Projects/mlEco/mlEco/obj/x86/Release/mlEco.csprojAssemblyReference.cache
+/home/gilaad/Projects/DFN/mlEco/mlEco/obj/x86/Release/mlEco.csprojAssemblyReference.cache
+/home/gilaad/Projects/DFN/mlEco/mlEco/obj/x86/Release/mlEco.exe
+/home/gilaad/Projects/DFN/mlEco/mlEco/bin/Release/mlEco.exe

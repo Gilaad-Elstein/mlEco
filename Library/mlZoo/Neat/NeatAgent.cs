@@ -15,7 +15,6 @@ namespace MlEco
 
         internal static int GetInnovationNumber((NodeGene, NodeGene) nodes)
         {
-            if (!ValidatNodePair(nodes)) { throw new ArgumentException(string.Format("bad node pair {0}, {1}", nodes.Item1.Index, nodes.Item2.Index)); }
             int innovationIndex = GlobalInnovationSet.IndexOf((nodes.Item1.Index, nodes.Item2.Index));
             if (innovationIndex >= 0)
             {
@@ -32,43 +31,6 @@ namespace MlEco
         {
             GlobalInnovationSet.Clear();
         }
-
-        public static bool ValidatNodePair((NodeGene, NodeGene) nodes)
-        {
-            int index1 = nodes.Item1.Index;
-            int index2 = nodes.Item2.Index;
-            return ValidatNodePair(index1, index2);
-        }
-
-        public static bool ValidatNodePair(int index1, int index2)
-        {
-            NodeGene.NodeType type1;
-            NodeGene.NodeType type2;
-
-            if (index1 < NUM_INPUTS) { type1 = NodeGene.NodeType.Input; }
-            else if (index1 < NUM_INPUTS + NUM_OUTPUTS) { type1 = NodeGene.NodeType.Output; }
-            else { type1 = NodeGene.NodeType.Hidden; }
-
-            if (index2 < NUM_INPUTS) { type2 = NodeGene.NodeType.Input; }
-            else if (index2 < NUM_INPUTS + NUM_OUTPUTS) { type2 = NodeGene.NodeType.Output; }
-            else { type2 = NodeGene.NodeType.Hidden; }
-
-            if (type2 == NodeGene.NodeType.Input ||
-                 type1 == NodeGene.NodeType.Output)
-            {
-                return false;
-            }
-
-            if (type1 == NodeGene.NodeType.Hidden &&
-                 type2 == NodeGene.NodeType.Hidden &&
-                 index1 >= index2)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
 
         int numInputs;
         int numOutputs;
@@ -90,6 +52,47 @@ namespace MlEco
             {
                 Nodes.Add(new NodeGene(NodeGene.NodeType.Output, Nodes.Count));
             }
+        }
+
+        public bool ValidatNodePair((NodeGene, NodeGene) nodes)
+        {
+            int index1 = nodes.Item1.Index;
+            int index2 = nodes.Item2.Index;
+            return ValidatNodePair(index1, index2);
+        }
+
+        public bool ValidatNodePair(int index1, int index2)
+        {
+            NodeGene.NodeType type1;
+            NodeGene.NodeType type2;
+
+            if (index1 < NUM_INPUTS) { type1 = NodeGene.NodeType.Input; }
+            else if (index1 < NUM_INPUTS + NUM_OUTPUTS) { type1 = NodeGene.NodeType.Output; }
+            else { type1 = NodeGene.NodeType.Hidden; }
+
+            if (index2 < NUM_INPUTS) { type2 = NodeGene.NodeType.Input; }
+            else if (index2 < NUM_INPUTS + NUM_OUTPUTS) { type2 = NodeGene.NodeType.Output; }
+            else { type2 = NodeGene.NodeType.Hidden; }
+
+            if (type2 == NodeGene.NodeType.Input ||
+                type1 == NodeGene.NodeType.Output) { return false; }
+
+            if (type1 == NodeGene.NodeType.Hidden &&
+                type2 == NodeGene.NodeType.Hidden) { return CheckNodesForLoop(index1, index2); }
+
+            return true;
+        }
+
+        private bool CheckNodesForLoop(int index1, int index2)
+        {
+            ConnectionGene testedConnection = new ConnectionGene(Nodes[index1], Nodes[index2]);
+            Connections.Add(testedConnection);
+            for (int i = 0; i < numInputs; i++)
+            {
+
+            }
+            Connections.Remove(testedConnection);
+            throw new NotImplementedException();
         }
 
         internal override double[] Activate(double[] inputs)

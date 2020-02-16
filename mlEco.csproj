@@ -99,7 +99,6 @@
     <Compile Include="Library\mlZoo\Neat\ConnectionGene.cs" />
     <Compile Include="Library\mlZoo\Neat\NodeGene.cs" />
     <Compile Include="Library\mlZoo\Neat\NeatReproduction.cs" />
-    <Compile Include="Tests\TestNeatAgent.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Simulation\" />
@@ -107,7 +106,6 @@
     <Folder Include="Library\" />
     <Folder Include="Library\mlZoo\" />
     <Folder Include="Library\mlZoo\Neat\" />
-    <Folder Include="Tests\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

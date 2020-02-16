@@ -17,13 +17,6 @@ namespace mlEco.Library.mlZoo.Neat
 
         internal ConnectionGene(NodeGene inNode, NodeGene outNode, double? _weight = null)
         {
-            if (!ValidatNodePair(inNode.Index, outNode.Index)) 
-            {
-                StackTrace stackTrace = new StackTrace();
-                throw new ArgumentException(string.Format(
-                    "{0} called ConnectionGene with bad node pair {1}, {2}", stackTrace.GetFrame(1).GetMethod().Name,
-                                                                             inNode.Index, outNode.Index)); 
-            }
             this.InNode = inNode;
             this.OutNode = outNode;
             this.Weight = _weight is null ? RandomDouble() * 2 - 1 : (double)_weight;

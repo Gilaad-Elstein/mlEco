@@ -6,7 +6,7 @@ namespace MlEco
         public static void Main()
         {
             Gtk.Application.Init();
-            new TopographyViewerApp();
+            new MlEcoApp();
             Gtk.Application.Run();
             return;
         }
