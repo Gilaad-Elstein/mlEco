@@ -2,7 +2,7 @@
 MLEco​ — 
 A simulated ecosystem of “living” agents.
 
-Developed on top of a self implemented neural network an, ecosystem of
+Developed on top of a self implemented neural network, an ecosystem of
 agents that must eat and breed to survive in a simulated 2D world.
 
 ● Neuro Evolution algorithm to facilitate genetic learning
