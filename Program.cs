@@ -10,10 +10,5 @@ namespace MlEco
             Gtk.Application.Run();
             return;
         }
-
-        private static void AppMain()
-        {
-
-        }
     }
 }
